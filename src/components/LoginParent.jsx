@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../css/Login.css";
 import parent from "/assets/parent.png";
+import { Link } from "react-router-dom";
 
 export default function LoginParent() {
     const [formData, SetFormData] = useState({
@@ -58,8 +59,8 @@ export default function LoginParent() {
                 </form>
 
                 <div className="links">
-                    <a href="/">Contact Admin</a>
-                    <a href="/">Back Home</a>
+                    <Link to="/">Contact Admin</Link>
+                    <Link to="/">Back Home</Link>
                 </div>
             </div>
         </div>
