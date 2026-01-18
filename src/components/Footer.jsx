@@ -1,9 +1,7 @@
-function About() {
+export default function Footer() {
     return (
         <>
-            <h1>About Page</h1>
+            <h1>Footer</h1>
         </>
     )
 }
-
-export default About;
