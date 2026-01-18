@@ -1,16 +1,20 @@
 import "../css/Header.css"
+import { Link, useNavigate } from "react-router-dom";
+import logo from "/logo.jpg";
 
 export default function Header() {
+    const navigate = useNavigate();
+
     return (
         <header>
-            <div className="header-left" onClick={() => window.location.href = "/"}>
-                <img src="/logo.jpg" alt="College Health System Logo" className="logo" />
+            <div className="header-left" onClick={() => navigate("/")}>
+                <img src={logo} alt="College Health System Logo" className="logo" />
                 <h2>College Health System</h2>
             </div>
             <div className="header-right">
-                <a href="/login-student">Student Login</a>
-                <a href="/login-parent">Parent Login</a>
-                <a href="/login-doctor">Doctor Login</a>
+                <Link to="/login-student">Student Login</Link>
+                <Link to="/login-parent">Parent Login</Link>
+                <Link to="/login-doctor">Doctor Login</Link>
             </div>
         </header>
     )
