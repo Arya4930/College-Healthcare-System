@@ -1,5 +1,6 @@
 import { useState } from "react";
-import "../css/LoginStudent.css";
+import "../css/Login.css";
+import student from "/assets/student.avif";
 
 export default function LoginStudent() {
     const [formData, SetFormData] = useState({
@@ -22,7 +23,7 @@ export default function LoginStudent() {
     }
 
     return (
-        <div className="login-container">
+        <div className="login-container" style={{ backgroundImage: `url(${student})` }}>
             <div className="login-card">
                 <h1>Student Login</h1>
                 <p>Login to view your prescriptions</p>
