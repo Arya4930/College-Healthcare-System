@@ -5,10 +5,12 @@ import Home from './components/Home.jsx';
 import LoginStudent from './components/LoginStudent.jsx';
 import LoginParent from './components/LoginParent.jsx';
 import LoginDoctor from './components/LoginDoctor.jsx';
+import Header from './components/Header.jsx';
 
 export default function App() {
   return (
     <>
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

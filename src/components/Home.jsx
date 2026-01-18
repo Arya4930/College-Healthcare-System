@@ -1,10 +1,9 @@
+import "../css/Home.css"
+
 export default function Home() {
     return (
-        <>
+        <div className="main-container">
             <h1>Home Page</h1>
-            <a href="/login-student">Go to Student Login</a><br></br>
-            <a href="/login-parent">Go to Parent Login</a><br></br>
-            <a href="/login-doctor">Go to Doctor Login</a>
-        </>
+        </div>
     )
 }
