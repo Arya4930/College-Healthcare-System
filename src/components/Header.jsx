@@ -1,6 +1,6 @@
 import "../css/Header.css"
 import { Link, useNavigate } from "react-router-dom";
-import logo from "/logo.jpg";
+import logo from "/logo.png";
 
 export default function Header({ LoggedIn }) {
     const navigate = useNavigate();
