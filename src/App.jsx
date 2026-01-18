@@ -2,12 +2,12 @@ import './App.css'
 import { Routes, Route } from 'react-router-dom';
 import Footer from './components/Footer.jsx';
 import Home from './components/Home.jsx';
-import LoginStudent from './components/LoginStudent.jsx';
-import LoginParent from './components/LoginParent.jsx';
-import LoginDoctor from './components/LoginDoctor.jsx';
-import StudentDashboard from './components/StudentDashboard.jsx';
-import ParentDashboard from './components/ParentDashboard.jsx';
-import DoctorDashboard from './components/DoctorDashboard.jsx';
+import LoginStudent from './components/Login/LoginStudent.jsx';
+import LoginParent from './components/Login/LoginParent.jsx';
+import LoginDoctor from './components/Login/LoginDoctor.jsx';
+import StudentDashboard from './components/Dashboard/StudentDashboard.jsx';
+import ParentDashboard from './components/Dashboard/ParentDashboard.jsx';
+import DoctorDashboard from './components/Dashboard/DoctorDashboard.jsx';
 import Header from './components/Header.jsx';
 import { useState } from 'react';
 

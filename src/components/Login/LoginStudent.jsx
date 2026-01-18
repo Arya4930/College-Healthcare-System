@@ -1,11 +1,11 @@
 import { useState } from "react";
-import "../css/Login.css";
-import parent from "/assets/parent.png";
+import "../../css/Login.css";
+import student from "/assets/student.avif";
 import { Link } from "react-router-dom";
 
-export default function LoginParent() {
+export default function LoginStudent() {
     const [formData, SetFormData] = useState({
-        wardID: "",
+        studentID: "",
         password: "",
     });
 
@@ -14,7 +14,7 @@ export default function LoginParent() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.wardID || !formData.password) {
+        if (!formData.studentID || !formData.password) {
             SetError("Please fill in all fields");
             return;
         }
@@ -24,20 +24,20 @@ export default function LoginParent() {
     }
 
     return (
-        <div className="login-container" style={{ backgroundImage: `url(${parent})` }}>
+        <div className="login-container" style={{ backgroundImage: `url(${student})` }}>
             <div className="login-card">
-                <h1>Parent Login</h1>
-                <p>Login to view your ward's prescriptions</p>
+                <h1>Student Login</h1>
+                <p>Login to view your prescriptions</p>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Ward ID</label>
+                        <label>Student ID</label>
                         <input
                             type="text"
-                            id="wardID"
-                            name="wardID"
-                            placeholder="Enter your Ward ID"
-                            value={formData.wardID}
-                            onChange={(e) => { SetFormData({ ...formData, wardID: e.target.value }); SetError(null) }}
+                            id="studentID"
+                            name="studentID"
+                            placeholder="Enter your Student ID (e.g 24BCE5274)"
+                            value={formData.studentID}
+                            onChange={(e) => { SetFormData({ ...formData, studentID: e.target.value }); SetError(null) }}
                         />
                     </div>
 

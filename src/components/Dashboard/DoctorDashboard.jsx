@@ -1,4 +1,4 @@
-import "../css/DoctorDashboard.css";
+import "../../css/DoctorDashboard.css";
 import { FilterIcon } from "lucide-react";
 
 export default function DoctorDashboard() {
