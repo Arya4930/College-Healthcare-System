@@ -1,18 +1,21 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom';
-import About from './about/about.jsx';
-import Hello from './about/Hello.jsx';
+import About from './components/about.jsx';
+import Home from './components/Home.jsx';
+import LoginStudent from './components/LoginStudent.jsx';
+import LoginParent from './components/LoginParent.jsx';
+import LoginDoctor from './components/LoginDoctor.jsx';
 
-function App() {
-
+export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Hello />} />
+        <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/login-student" element={<LoginStudent />} />
+        <Route path="/login-parent" element={<LoginParent />} />
+        <Route path="/login-doctor" element={<LoginDoctor />} />
       </Routes>
     </>
   )
 }
-
-export default App
