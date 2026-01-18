@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://arya4930.github.io/College-Healthcare-System/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
