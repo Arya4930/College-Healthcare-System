@@ -1,5 +1,26 @@
-.footer-container {
-    border: 2px solid #ccc;
-    font-size: 18px;
-    color: black;
+footer {
+  width: 98%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  color: #333;
+}
+
+.footer-right {
+  margin-right: 20px;
+}
+
+.footer-right a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.footer-right a:hover {
+  color: #007bff;
 }
