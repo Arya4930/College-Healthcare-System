@@ -2,7 +2,7 @@ import "../css/Header.css"
 import { Link, useNavigate } from "react-router-dom";
 import logo from "/logo.jpg";
 
-export default function Header() {
+export default function Header({ LoggedIn }) {
     const navigate = useNavigate();
 
     return (
@@ -12,9 +12,19 @@ export default function Header() {
                 <h2>College Health System</h2>
             </div>
             <div className="header-right">
-                <Link to="/login-student">Student Login</Link>
-                <Link to="/login-parent">Parent Login</Link>
-                <Link to="/login-doctor">Doctor Login</Link>
+                {LoggedIn ? (
+                    <>
+                        <Link to="/student-dashboard">Student Dashboard</Link>
+                        <Link to="/parent-dashboard">Parent Dashboard</Link>
+                        <Link to="/doctor-dashboard">Doctor Dashboard</Link>
+                    </>
+                ): (
+                    <>
+                        <Link to="/login-student">Student Login</Link>
+                        <Link to="/login-parent">Parent Login</Link>
+                        <Link to="/login-doctor">Doctor Login</Link>
+                    </>
+                )}
             </div>
         </header>
     )

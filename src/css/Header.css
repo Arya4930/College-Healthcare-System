@@ -25,6 +25,10 @@ header {
     width: 35px;
 }
 
+.header-right {
+    margin-right: 20px;
+}
+
 .header-left h2 {
     font-size: x-large;
     margin: 0;

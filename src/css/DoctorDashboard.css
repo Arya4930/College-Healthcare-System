@@ -1,0 +1,70 @@
+.doctor-dashboard {
+    padding: 20px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.doctor-dashboard h1 {
+    margin-bottom: 20px;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.primary-btn {
+    padding: 10px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
+}
+
+.secondary-btn {
+    padding: 10px 16px;
+    background-color: #e9ecef;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.secondary-btn:hover {
+    background-color: #d6d8db;
+}
+
+.prescription-list h2 {
+    margin-bottom: 15px;
+}
+
+.prescription-card {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.prescription-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.prescription-card p {
+    margin: 5px 0;
+}
