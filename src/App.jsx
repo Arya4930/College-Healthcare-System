@@ -16,9 +16,8 @@ export default function App() {
 
   return (
     <>
-      <Header LoggedIn={LoggedIn} />
+      <Header LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} />
       <div style={{ height: '60px' }}></div>
-      <button onClick={() => setLoggedIn(!LoggedIn)}>{LoggedIn ? "Set Logged Out" : "Set Logged In"}</button> ( For testing purposes )
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login-student" element={<LoginStudent />} />

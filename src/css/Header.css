@@ -45,3 +45,32 @@ header {
 .header-right a:hover {
     color: #007bff;
 }
+
+.header-right .other-buttons {
+    margin-left: 20px;
+    font-size: large;
+    padding: 6px 12px;
+    border: none;
+    background-color: transparent;
+    color: #333333;
+    border-radius: 4px;
+}
+
+.header-right .other-buttons:hover {
+    background-color: #f0f0f0;
+}
+
+.header-right button {
+    margin-left: 20px;
+    font-size: large;
+    padding: 6px 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.header-right button:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,92 @@
+.home-page {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.main {
+    height: 80vh;
+    background-size: cover;
+    background-position: center;
+    animation: bgSlide 15s infinite ease-in-out;
+    display: flex;
+    align-items: center;
+}
+
+@keyframes bgSlide {
+    0% {
+        background-image: url("/assets/doctor.png");
+    }
+    33% {
+        background-image: url("/assets/parent.png");
+    }
+    66% {
+        background-image: url("/assets/student.avif");
+    }
+    100% {
+        background-image: url("/assets/doctor.png");
+    }
+}
+
+.main-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    color: black;
+    max-width: 650px;
+    max-height: 400px;
+    opacity: 0.8;
+    margin-left: 80px;
+}
+
+.home-content h1 {
+    margin-bottom: 15px;
+}
+
+.main-content p {
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.goals {
+    padding: 20px 100px;
+}
+
+.goals h1 {
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.goal-row {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: -20px;
+}
+
+.goal-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.goal-row img {
+    width: 340px;
+    height: 340px;
+    object-fit: contain;
+}
+
+.goal-text {
+    max-width: 500px;
+}
+
+.goal-text h3 {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #1a4ed8;
+    margin-top: 0px;
+}
+
+.goal-text p {
+    font-size: 18px;
+    color: #555;
+    line-height: 1.6;
+}
