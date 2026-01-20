@@ -104,3 +104,29 @@
     color: #555;
     line-height: 1.6;
 }
+
+@media (max-width: 768px) {
+    .main {
+        height: 50vh;
+    }
+    .goal-row {
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .goal-row.reverse {
+        flex-direction: column;
+    }
+
+    .goal-row img {
+        width: 350px;
+        height: auto;
+    }
+
+    .main-content {
+        margin-left: 20px;
+        margin-right: 20px;
+        padding: 20px;
+    }
+}

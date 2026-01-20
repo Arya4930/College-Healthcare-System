@@ -74,3 +74,58 @@ header {
 .header-right button:hover {
     background-color: #0056b3;
 }
+
+.hamburger-menu {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-right: 40px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .header-title {
+        display: none;
+    }
+
+    .hamburger-menu {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 40px;
+        background: white;
+        flex-direction: column;
+        width: 200px;
+        padding: 15px 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .nav-links.open {
+        display: flex;
+    }
+
+    .nav-links a,
+    .nav-links button {
+        margin: 10px 20px;
+        width: 100%;
+        text-align: left;
+    }
+
+    .header-right {
+        position: relative;
+    }
+
+    .header-right .other-buttons {
+        margin-left: 0px;
+        margin-bottom: 3px;
+    }
+}
