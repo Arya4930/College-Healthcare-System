@@ -85,6 +85,7 @@
     width: 340px;
     height: 340px;
     object-fit: contain;
+    border-radius: 12px;
 }
 
 .goal-text {
