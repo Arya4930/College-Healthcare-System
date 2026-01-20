@@ -8,10 +8,9 @@ export default function Home() {
     <div className="home-page">
       <section className="main">
         <div className="main-content">
-          <h1>One Place for Doctors Parents and Students of VIT</h1>
+          <h1><span style={{ fontSize: "45px" }}>O</span>ne Place for Doctors, Parents and Students of VIT</h1>
           <p>
-            A unified digital health platform connecting medical staff, parents,
-            and students for better care and communication.
+            An unified digital health platform for medical staff, parents, and students for better care and communication.
           </p>
         </div>
       </section>

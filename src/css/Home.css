@@ -5,25 +5,38 @@
 
 .main {
     height: 80vh;
-    background-size: cover;
-    background-position: center;
-    animation: bgSlide 15s infinite ease-in-out;
     display: flex;
     align-items: center;
+    background-position: center;
+    background-size: 110%;
+    animation: bgSlide 18s infinite ease-in-out;
 }
 
 @keyframes bgSlide {
     0% {
         background-image: url("/assets/doctor.png");
+        background-size: 110%;
+    }
+    30% {
+        background-size: 100%;
     }
     33% {
         background-image: url("/assets/parent.png");
+        background-size: 110%;
+    }
+    63% {
+        background-size: 100%;
     }
     66% {
         background-image: url("/assets/student.avif");
+        background-size: 110%;
+    }
+    96% {
+        background-size: 100%;
     }
     100% {
         background-image: url("/assets/doctor.png");
+        background-size: 110%;
     }
 }
 
