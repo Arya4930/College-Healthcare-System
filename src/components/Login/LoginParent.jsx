@@ -3,10 +3,11 @@ import "../../css/Login.css";
 import parent from "/assets/parent.png";
 import { Link } from "react-router-dom";
 
-export default function LoginParent() {
+export default function LoginParent({ handleLogin }) {
     const [formData, SetFormData] = useState({
-        wardID: "",
+        ID: "",
         password: "",
+        type: "parent",
     });
 
     const [error, SetError] = useState(null);
@@ -14,13 +15,13 @@ export default function LoginParent() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.wardID || !formData.password) {
+        if (!formData.ID || !formData.password) {
             SetError("Please fill in all fields");
             return;
         }
 
         SetError("");
-        console.log("Form submitted", formData);
+        handleLogin(formData);
     }
 
     return (
@@ -33,11 +34,11 @@ export default function LoginParent() {
                         <label>Ward ID</label>
                         <input
                             type="text"
-                            id="wardID"
-                            name="wardID"
-                            placeholder="Enter your Ward ID"
-                            value={formData.wardID}
-                            onChange={(e) => { SetFormData({ ...formData, wardID: e.target.value }); SetError(null) }}
+                            id="ID"
+                            name="ID"
+                            placeholder="Enter your ID"
+                            value={formData.ID}
+                            onChange={(e) => { SetFormData({ ...formData, ID: e.target.value }); SetError(null) }}
                         />
                     </div>
 

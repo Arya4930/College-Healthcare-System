@@ -3,10 +3,11 @@ import "../../css/Login.css";
 import student from "/assets/student.avif";
 import { Link } from "react-router-dom";
 
-export default function LoginStudent() {
+export default function LoginStudent({ handleLogin }) {
     const [formData, SetFormData] = useState({
-        studentID: "",
+        ID: "",
         password: "",
+        type: "student",
     });
 
     const [error, SetError] = useState(null);
@@ -14,13 +15,13 @@ export default function LoginStudent() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.studentID || !formData.password) {
+        if (!formData.ID || !formData.password) {
             SetError("Please fill in all fields");
             return;
         }
 
         SetError("");
-        console.log("Form submitted", formData);
+        handleLogin(formData);
     }
 
     return (
@@ -33,11 +34,11 @@ export default function LoginStudent() {
                         <label>Student ID</label>
                         <input
                             type="text"
-                            id="studentID"
-                            name="studentID"
+                            id="ID"
+                            name="ID"
                             placeholder="Enter your Student ID (e.g 24BCE5274)"
-                            value={formData.studentID}
-                            onChange={(e) => { SetFormData({ ...formData, studentID: e.target.value }); SetError(null) }}
+                            value={formData.ID}
+                            onChange={(e) => { SetFormData({ ...formData, ID: e.target.value }); SetError(null) }}
                         />
                     </div>
 

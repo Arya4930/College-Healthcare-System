@@ -44,7 +44,7 @@ export default function StudentDashboard() {
     ];
 
     const filteredVisits = visits.filter((v) =>
-        v.sickness.toLowerCase().includes(search.toLowerCase()) ||
+        v.reason.toLowerCase().includes(search.toLowerCase()) ||
         v.doctorName.toLowerCase().includes(search.toLowerCase())
     );
 

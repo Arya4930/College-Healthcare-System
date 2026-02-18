@@ -28,6 +28,6 @@ app.use("/api/auth/verify", verifyRoutes);
 app.use("/api/users", fetchAllUsersRoutes);
 
 app.listen(4000, async () => {
-    console.log(`🚀 Express TS server running on port 4000`);
+    console.log(`🚀 Express JS server running on port 4000`);
     await connectDB();
 });

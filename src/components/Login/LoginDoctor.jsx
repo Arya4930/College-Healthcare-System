@@ -3,7 +3,7 @@ import "../../css/Login.css";
 import doctor from "/assets/doctor.png";
 import { Link } from "react-router-dom";
 
-export default function LoginDoctor() {
+export default function LoginDoctor({ handleLogin }) {
     const [formData, SetFormData] = useState({
         ID: "",
         password: "",
@@ -21,7 +21,7 @@ export default function LoginDoctor() {
         }
 
         SetError("");
-        console.log("Form submitted", formData);
+        handleLogin(formData);
     }
 
     return (
@@ -34,11 +34,11 @@ export default function LoginDoctor() {
                         <label>Doctor ID</label>
                         <input
                             type="text"
-                            id="doctorID"
-                            name="doctorID"
-                            placeholder="Enter your Doctor ID"
-                            value={formData.doctorID}
-                            onChange={(e) => { SetFormData({ ...formData, doctorID: e.target.value }); SetError(null) }}
+                            id="ID"
+                            name="ID"
+                            placeholder="Enter your ID"
+                            value={formData.ID}
+                            onChange={(e) => { SetFormData({ ...formData, ID: e.target.value }); SetError(null) }}
                         />
                     </div>
 

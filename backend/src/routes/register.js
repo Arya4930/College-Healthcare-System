@@ -50,19 +50,13 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const { name, ID, password, type, role, parent = []} = req.body;
+        const { name, ID, password, type, role, parent = ""} = req.body;
 
         if (!name || !ID || !password || !type || !role) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required",
             });
-        }
-
-        let parentArray = [];
-
-        if (type === "student") {
-            parentArray = Array.isArray(parent) ? parent : [];
         }
 
         const existingUser = await User.findOne({ ID, type });
@@ -76,7 +70,7 @@ router.post("/", async (req, res) => {
             password,
             type,
             role,
-            parent: parentArray,
+            parent: type === "student" ? parent : undefined,
         });
 
         const { accessToken } = await generateAccessAndRefreshToken(user._id);

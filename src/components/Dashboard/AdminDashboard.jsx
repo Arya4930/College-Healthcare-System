@@ -124,8 +124,7 @@ export default function AdminDashboard({ handleRegister }) {
                                 setNewUser({
                                     ...newUser,
                                     type: e.target.value,
-                                    parent: [],
-                                    child: []
+                                    parent: "",
                                 })
                             }
                         >
@@ -181,7 +180,7 @@ export default function AdminDashboard({ handleRegister }) {
                     <p>No users found.</p>
                 ) : (
                     filteredUsers.map((user) => (
-                        <div className="prescription-card" key={user.id}>
+                        <div className="prescription-card" key={user.ID}>
                             <p><strong>Name:</strong> {user.name}</p>
                             <p><strong>User ID:</strong> {user.ID}</p>
                             <p><strong>Type:</strong> {user.type}</p>

@@ -15,7 +15,8 @@ import Header from './components/Header.jsx';
 import { useState, useEffect } from 'react';
 
 export default function App() {
-  const [LoggedIn, setLoggedIn] = useState(false);
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [user, setUser] = useState(null);
 
@@ -23,7 +24,10 @@ export default function App() {
     async function verify() {
       try {
         const token = localStorage.getItem("token");
-        if (!token) return;
+        if (!token) {
+          setAuthLoading(false);
+          return;
+        }
 
         const res = await fetch(`http://localhost:4000/api/auth/verify`, {
           headers: {
@@ -41,8 +45,9 @@ export default function App() {
           localStorage.removeItem("token");
         }
       } catch (err) {
-        console.error("Verification error:", err instanceof Error ? err.message : "Unknown error");
         localStorage.removeItem("token");
+      } finally {
+        setAuthLoading(false);
       }
     }
 
@@ -69,7 +74,7 @@ export default function App() {
       if (data.data?.user) {
         setUser(data.data.user);
       }
-      window.location.href = `/College-Healthcare-System/#/${LoginData.type}-dashboard`;
+      window.location.reload();
 
     } catch (err) {
       return err instanceof Error ? err.message : "Unknown error during login";
@@ -107,9 +112,13 @@ export default function App() {
     setUser(null);
   }
 
+  if (authLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
-      <Header user={user} LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} handleLogout={handleLogout} />
+      <Header user={user} LoggedIn={isLoggedIn} setLoggedIn={setLoggedIn} handleLogout={handleLogout} />
       <div style={{ height: '60px' }}></div>
       <Routes>
         <Route path="/" element={<Home />} />
