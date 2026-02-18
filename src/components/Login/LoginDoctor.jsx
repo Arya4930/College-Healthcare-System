@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 
 export default function LoginDoctor() {
     const [formData, SetFormData] = useState({
-        doctorID: "",
+        ID: "",
         password: "",
+        type: "doctor",
     });
 
     const [error, SetError] = useState(null);
@@ -14,7 +15,7 @@ export default function LoginDoctor() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (!formData.doctorID || !formData.password) {
+        if (!formData.ID || !formData.password) {
             SetError("Please fill in all fields");
             return;
         }
