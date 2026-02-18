@@ -1,6 +1,6 @@
+import User from "../lib/models/Users.js";
 import express from "express";
 import jwt from "jsonwebtoken";
-import User from "../lib/models/Users.js";
 
 export const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get("/", async (req, res) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: "Unauthorized: Token missing",
+                message: "Unauthorized: No token",
             });
         }
 
@@ -22,27 +22,26 @@ router.get("/", async (req, res) => {
             process.env.ACCESS_TOKEN_SECRET
         );
 
-        const user = await User.findById(decoded._id)
-            .select("-password -refreshToken")
-            .exec();
+        const adminUser = await User.findById(decoded._id);
 
-        if (!user) {
-            return res.status(401).json({
+        if (!adminUser || adminUser.role !== "admin") {
+            return res.status(403).json({
                 success: false,
-                message: "Invalid access token",
+                message: "Only admins can register users",
             });
         }
 
+        const users = await User.find().select("-password -refreshToken");
         return res.status(200).json({
             success: true,
-            message: "Token valid",
-            data: user,
+            message: "Users fetched successfully",
+            data: users,
         });
     } catch (err) {
-        console.error("Token verification error:", err instanceof Error ? err.message : "Unknown error");
-        return res.status(401).json({
+        console.error("Error fetching users:", err instanceof Error ? err.message : "Unknown error");
+        return res.status(500).json({
             success: false,
-            message: "Token verification failed",
+            message: "Failed to fetch users",
         });
     }
 });

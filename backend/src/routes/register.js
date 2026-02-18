@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../lib/models/Users.js";
+import jwt from "jsonwebtoken";
 
 export const router = express.Router();
 
@@ -24,10 +25,44 @@ export const generateAccessAndRefreshToken = async (userId) => {
 
 router.post("/", async (req, res) => {
     try {
-        const { name, ID, password, type } = req.body;
+        const token =
+            req.cookies?.accessToken ||
+            req.header("Authorization")?.replace("Bearer ", "");
 
-        if ([name, ID, password, type].some((field) => !field || field.trim() === "")) {
-            return res.status(400).json({ success: false, message: "All fields are required" });
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: No token",
+            });
+        }
+
+        const decoded = jwt.verify(
+            token,
+            process.env.ACCESS_TOKEN_SECRET
+        );
+
+        const adminUser = await User.findById(decoded._id);
+
+        if (!adminUser || adminUser.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Only admins can register users",
+            });
+        }
+
+        const { name, ID, password, type, role, parent = []} = req.body;
+
+        if (!name || !ID || !password || !type || !role) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required",
+            });
+        }
+
+        let parentArray = [];
+
+        if (type === "student") {
+            parentArray = Array.isArray(parent) ? parent : [];
         }
 
         const existingUser = await User.findOne({ ID, type });
@@ -40,22 +75,22 @@ router.post("/", async (req, res) => {
             ID,
             password,
             type,
+            role,
+            parent: parentArray,
         });
 
         const { accessToken } = await generateAccessAndRefreshToken(user._id);
 
         const createdUser = await User.findById(user._id).select("-password -refreshToken");
-        if (!createdUser) {
-            return res.status(500).json({ success: false, message: "Error creating user" });
-        }
 
         return res.status(201).json({
             success: true,
             message: "User created successfully",
             data: { user: createdUser, accessToken }
         });
+
     } catch (error) {
-        console.error("Register error:", error instanceof Error ? error.message : "Unknown error");
+        console.error("Register error:", error);
         return res.status(500).json({ success: false, message: "Server error" });
     }
 });

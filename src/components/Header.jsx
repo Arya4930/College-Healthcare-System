@@ -4,7 +4,7 @@ import logo from "/logo.png";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
-export default function Header({ LoggedIn, setLoggedIn }) {
+export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -37,19 +37,37 @@ export default function Header({ LoggedIn, setLoggedIn }) {
                         Our Goals
                     </button>
 
-                    {LoggedIn ? (
+                    {LoggedIn && user ? (
                         <>
-                            <Link to="/student-dashboard" onClick={() => setMenuOpen(false)}>Student Dashboard</Link>
-                            <Link to="/parent-dashboard" onClick={() => setMenuOpen(false)}>Parent Dashboard</Link>
-                            <Link to="/doctor-dashboard" onClick={() => setMenuOpen(false)}>Doctor Dashboard</Link>
-                            <button onClick={() => { setLoggedIn(false); setMenuOpen(false); }}>Logout</button>
+                            {user.role === "admin" && (
+                                <Link to="/admin-dashboard" onClick={() => setMenuOpen(false)}>Admin Dashboard</Link>
+                            )}
+                            {user.type === "student" && (
+                                <Link to="/student-dashboard" onClick={() => setMenuOpen(false)}>Student Dashboard</Link>
+                            )}
+                            {user.type === "parent" && (
+                                <Link to="/parent-dashboard" onClick={() => setMenuOpen(false)}>Parent Dashboard</Link>
+                            )}
+                            {user.type === "doctor" && (
+                                <Link to="/doctor-dashboard" onClick={() => setMenuOpen(false)}>Doctor Dashboard</Link>
+                            )}
+
+                            <button
+                                onClick={() => {
+                                    setLoggedIn(false);
+                                    handleLogout();
+                                    setMenuOpen(false);
+                                }}
+                            >
+                                Logout
+                            </button>
                         </>
                     ) : (
                         <>
-                            <Link to="/login-student" onClick={() => setMenuOpen(false)}>Student Login</Link>
-                            <Link to="/login-parent" onClick={() => setMenuOpen(false)}>Parent Login</Link>
-                            <Link to="/login-doctor" onClick={() => setMenuOpen(false)}>Doctor Login</Link>
-                            <button onClick={() => { setLoggedIn(true); setMenuOpen(false); }}>Login</button>
+                            <Link to="/login-student">Student Login</Link>
+                            <Link to="/login-parent">Parent Login</Link>
+                            <Link to="/login-doctor">Doctor Login</Link>
+                            <Link to="/login-admin">Admin Login</Link>
                         </>
                     )}
                 </div>

@@ -24,8 +24,11 @@ const userSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["student", "doctor", "parent"],
+      enum: ["student", "doctor", "parent", "admin"],
       required: true,
+    },
+    parent: {
+      type: String,
     },
     refreshToken: {
       type: String,
@@ -57,6 +60,8 @@ userSchema.methods.generateAccessToken = function () {
       _id: this._id.toString(),
       ID: this.ID,
       name: this.name,
+      role: this.role,
+      type: this.type,
     },
     secret,
     { expiresIn: "7d" }

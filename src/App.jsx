@@ -5,9 +5,12 @@ import Home from './components/Home.jsx';
 import LoginStudent from './components/Login/LoginStudent.jsx';
 import LoginParent from './components/Login/LoginParent.jsx';
 import LoginDoctor from './components/Login/LoginDoctor.jsx';
+import LoginAdmin from './components/Login/LoginAdmin.jsx';
 import StudentDashboard from './components/Dashboard/StudentDashboard.jsx';
 import ParentDashboard from './components/Dashboard/ParentDashboard.jsx';
 import DoctorDashboard from './components/Dashboard/DoctorDashboard.jsx';
+import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
+import { ProtectedRoute, TypeRoute, LoggedIn } from './protectedRoutes.jsx';
 import Header from './components/Header.jsx';
 import { useState, useEffect } from 'react';
 
@@ -48,7 +51,7 @@ export default function App() {
 
   async function handleLogin(LoginData) {
     try {
-      const res = await fetch(`http://localhost:4000/api/auth/loginUser`, {
+      const res = await fetch(`http://localhost:4000/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(LoginData),
@@ -66,6 +69,7 @@ export default function App() {
       if (data.data?.user) {
         setUser(data.data.user);
       }
+      window.location.href = `/College-Healthcare-System/#/${LoginData.type}-dashboard`;
 
     } catch (err) {
       return err instanceof Error ? err.message : "Unknown error during login";
@@ -74,9 +78,16 @@ export default function App() {
 
   async function handleRegister(RegisterData) {
     try {
-      const res = await fetch(`http://localhost:4000/api/auth/registerUser`, {
+      const token = localStorage.getItem("token");
+
+      if (!token) return "Not authenticated";
+
+      const res = await fetch(`http://localhost:4000/api/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(RegisterData),
         credentials: "include",
       });
@@ -85,7 +96,7 @@ export default function App() {
 
       if (!res.ok) throw new Error(data.message);
 
-      alert("Registration successful!");
+      alert("User created successfully!");
     } catch (err) {
       return err instanceof Error ? err.message : "Unknown error during registration";
     }
@@ -98,18 +109,74 @@ export default function App() {
 
   return (
     <>
-      <Header LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} handleLogout={handleLogout} />
+      <Header user={user} LoggedIn={LoggedIn} setLoggedIn={setLoggedIn} handleLogout={handleLogout} />
       <div style={{ height: '60px' }}></div>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login-student" element={<LoginStudent handleLogin={handleLogin} />} />
-        <Route path="/login-parent" element={<LoginParent handleLogin={handleLogin} />} />
-        <Route path="/login-doctor" element={<LoginDoctor handleLogin={handleLogin} />} />
-        <Route path="/login-admin" element={<LoginAdmin handleLogin={handleLogin} />} />
-        <Route path="/student-dashboard" element={<StudentDashboard user={user} handleLogout={handleLogout} />} />
-        <Route path="/parent-dashboard" element={<ParentDashboard user={user} handleLogout={handleLogout} />} />
-        <Route path="/doctor-dashboard" element={<DoctorDashboard user={user} handleLogout={handleLogout} />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard user={user} handleRegister={handleRegister} handleLogout={handleLogout} />} />
+        <Route
+          path="login-student"
+          element={
+            <LoggedIn user={user}>
+              <LoginStudent handleLogin={handleLogin} />
+            </LoggedIn>
+          }
+        />
+        <Route
+          path="login-parent"
+          element={
+            <LoggedIn user={user}>
+              <LoginParent handleLogin={handleLogin} />
+            </LoggedIn>
+          }
+        />
+        <Route
+          path="login-doctor"
+          element={
+            <LoggedIn user={user}>
+              <LoginDoctor handleLogin={handleLogin} />
+            </LoggedIn>
+          }
+        />
+        <Route
+          path="login-admin"
+          element={
+            <LoggedIn user={user}>
+              <LoginAdmin handleLogin={handleLogin} />
+            </LoggedIn>
+          }
+        />
+        <Route
+          path="/student-dashboard"
+          element={
+            <TypeRoute user={user} allowedTypes={["student"]}>
+              <StudentDashboard user={user} handleLogout={handleLogout} />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/parent-dashboard"
+          element={
+            <TypeRoute user={user} allowedTypes={["parent"]}>
+              <ParentDashboard user={user} handleLogout={handleLogout} />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/doctor-dashboard"
+          element={
+            <TypeRoute user={user} allowedTypes={["doctor"]}>
+              <DoctorDashboard user={user} handleLogout={handleLogout} />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <TypeRoute user={user} allowedTypes={["admin"]}>
+              <AdminDashboard user={user} handleRegister={handleRegister} handleLogout={handleLogout} />
+            </TypeRoute>
+          }
+        />
       </Routes>
       <Footer />
     </>
