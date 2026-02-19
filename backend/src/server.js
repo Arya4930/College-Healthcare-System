@@ -6,6 +6,12 @@ import registerRoutes from "./routes/register.js";
 import loginRoutes from "./routes/login.js";
 import verifyRoutes from "./routes/verify.js";
 import fetchAllUsersRoutes from "./routes/fetchAllUsers.js";
+import bookRoute from "./routes/appointments/book.js";
+import fetchAllAppointmentsRoutes from "./routes/appointments/fetchAllAppointments.js";
+import fetchDoctorAppointments from "./routes/appointments/fetchDoctorAppointments.js";
+import acceptAppointment from "./routes/appointments/acceptAppointment.js";
+import complete from "./routes/appointments/complete.js"
+import fetchParentAppointments from "./routes/appointments/fetchParentAppointments.js"
 import { connectDB } from "./lib/mongodb.js";
 import "dotenv/config";
 
@@ -26,6 +32,12 @@ app.use("/api/auth/register", registerRoutes);
 app.use("/api/auth/login", loginRoutes);
 app.use("/api/auth/verify", verifyRoutes);
 app.use("/api/users", fetchAllUsersRoutes);
+app.use("/api/appointments/book", bookRoute);
+app.use("/api/appointments", fetchAllAppointmentsRoutes);
+app.use("/api/appointments/doctor", fetchDoctorAppointments);
+app.use("/api/appointments", acceptAppointment);
+app.use("/api/appointments", complete);
+app.use("/api/appointments", fetchParentAppointments);
 
 app.listen(4000, async () => {
     console.log(`🚀 Express JS server running on port 4000`);

@@ -1,88 +1,209 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
-import { FilterIcon } from "lucide-react";
 
-export default function DoctorDashboard() {
+export default function DoctorDashboard({ user }) {
+    const [appointments, setAppointments] = useState([]);
     const [search, setSearch] = useState("");
+    const [acceptingId, setAcceptingId] = useState(null);
+    const [timeInput, setTimeInput] = useState("");
+    const [prescriptionModal, setPrescriptionModal] = useState(null);
+    const [prescriptionData, setPrescriptionData] = useState({
+        diagnosis: "",
+        prescription: ""
+    });
 
-    const prescriptions = [
-        {
-            id: 1,
-            patientName: "Aarav Sharma",
-            studentID: "24BCE5274",
-            date: "2026-01-10",
-            diagnosis: "Common Cold",
-        },
-        {
-            id: 2,
-            patientName: "Riya Mehta",
-            studentID: "24DS1305",
-            date: "2026-01-12",
-            diagnosis: "Migraine",
-        },
-        {
-            id: 3,
-            patientName: "Kunal Verma",
-            studentID: "24BPS1001",
-            date: "2026-01-14",
-            diagnosis: "Vitamin Deficiency",
-        },
-        {
-            id: 4,
-            patientName: "Sneha Kapoor",
-            studentID: "24BCE1405",
-            date: "2026-01-15",
-            diagnosis: "Allergic Reaction",
-        },
-        {
-            id: 5,
-            patientName: "Aditya Singh",
-            studentID: "23BCE1278",
-            date: "2026-01-18",
-            diagnosis: "Stomach Ache",
+    async function fetchAppointments() {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("http://localhost:4000/api/appointments/doctor", {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            setAppointments(data.data);
         }
-    ];
+    }
 
-    const filteredPrescriptions = prescriptions.filter((p) =>
-        p.patientName.toLowerCase().includes(search.toLowerCase()) ||
-        p.studentID.toLowerCase().includes(search.toLowerCase())
+    useEffect(() => {
+        async function loadAppointments() {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:4000/api/appointments/doctor", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setAppointments(data.data);
+            }
+        }
+
+        loadAppointments();
+    }, []);
+
+    async function handleAccept(id) {
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:4000/api/appointments/accept/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ time: timeInput })
+        });
+
+        if (res.ok) {
+            setAcceptingId(null);
+            setTimeInput("");
+            fetchAppointments();
+        }
+    }
+
+    async function handleComplete(id) {
+        const token = localStorage.getItem("token");
+
+        await fetch(`http://localhost:4000/api/appointments/complete/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify(prescriptionData)
+        });
+
+        setPrescriptionModal(null);
+        setPrescriptionData({ diagnosis: "", prescription: "" });
+        fetchAppointments();
+    }
+
+    const filtered = appointments.filter(a =>
+        a.student.toLowerCase().includes(search.toLowerCase())
     );
 
     return (
         <div className="doctor-dashboard">
             <h1>Doctor Dashboard</h1>
+            <p><strong>Doctor Name: </strong>{user.name}</p>
 
             <div className="dashboard-actions">
-                <input 
-                    type="text" 
-                    placeholder="Search by Student ID or Name" 
+                <input
+                    type="text"
+                    placeholder="Search by Student ID"
                     className="search-bar"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)} 
+                    onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="primary-btn">Add New Prescription</button>
-                <button className="secondary-btn">
-                    <FilterIcon size={18} />
-                    <span>Filter</span>
-                </button>
             </div>
 
             <div className="prescription-list">
-                <h2>Previous Prescriptions</h2>
+                <h2>Appointments</h2>
 
-                {filteredPrescriptions.length === 0 ? (
-                    <p>No prescriptions found.</p>
-                ) : (
-                    filteredPrescriptions.map((prescription) => (
-                        <div className="prescription-card" key={prescription.id}>
-                            <p><strong>Patient:</strong> {prescription.patientName}</p>
-                            <p><strong>Student ID:</strong> {prescription.studentID}</p>
-                            <p><strong>Date:</strong> {prescription.date}</p>
-                            <p><strong>Diagnosis:</strong> {prescription.diagnosis}</p>
-                        </div>
-                    ))
-                )}
+                {filtered.map((appointment) => (
+                    <div className="prescription-card" key={appointment._id}>
+                        <p><strong>Student:</strong> {appointment.student}</p>
+                        <p><strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}</p>
+                        <p><strong>Reason:</strong> {appointment.reason}</p>
+                        <p><strong>Status:</strong> {appointment.status}</p>
+
+                        {appointment.status === "pending" && (
+                            <>
+                                {acceptingId === appointment._id ? (
+                                    <>
+                                        <input
+                                            type="time"
+                                            className="search-bar"
+                                            value={timeInput}
+                                            onChange={(e) => setTimeInput(e.target.value)}
+                                        />
+                                        <button
+                                            className="primary-btn"
+                                            onClick={() => handleAccept(appointment._id)}
+                                        >
+                                            Confirm
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        className="primary-btn"
+                                        onClick={() => setAcceptingId(appointment._id)}
+                                    >
+                                        Accept
+                                    </button>
+                                )}
+                            </>
+                        )}
+
+                        {appointment.status === "approved" && (
+                            <button
+                                className="primary-btn"
+                                onClick={() => setPrescriptionModal(appointment._id)}
+                            >
+                                Add Prescription
+                            </button>
+                        )}
+
+                        {appointment.status === "completed" && (
+                            <>
+                                <p><strong>Diagnosis:</strong> {appointment.diagnosis}</p>
+                                <p><strong>Prescription:</strong> {appointment.prescription}</p>
+                            </>
+                        )}
+                    </div>
+                ))}
             </div>
+
+            {prescriptionModal && (
+                <div className="modal-overlay">
+                    <div className="prescription-card" style={{ width: "400px" }}>
+                        <h2>Add Prescription</h2>
+
+                        <textarea
+                            placeholder="Diagnosis"
+                            className="search-bar"
+                            value={prescriptionData.diagnosis}
+                            onChange={(e) =>
+                                setPrescriptionData({
+                                    ...prescriptionData,
+                                    diagnosis: e.target.value
+                                })
+                            }
+                        />
+
+                        <textarea
+                            placeholder="Prescription"
+                            className="search-bar"
+                            value={prescriptionData.prescription}
+                            onChange={(e) =>
+                                setPrescriptionData({
+                                    ...prescriptionData,
+                                    prescription: e.target.value
+                                })
+                            }
+                        />
+
+                        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                            <button
+                                className="primary-btn"
+                                onClick={() => handleComplete(prescriptionModal)}
+                            >
+                                Save
+                            </button>
+                            <button
+                                className="secondary-btn"
+                                onClick={() => setPrescriptionModal(null)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

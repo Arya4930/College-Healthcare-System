@@ -1,43 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
 import { FilterIcon } from "lucide-react";
 
 export default function ParentDashboard() {
     const [search, setSearch] = useState("");
 
-    const wardVisits = [
-        {
-            id: 1,
-            studentName: "Aarav Sharma",
-            studentID: "24BCE5274",
-            visitDate: "2026-01-10",
-            sickness: "Common Cold",
-            doctorName: "Dr. R. Kumar",
-            prescription: "Paracetamol, Cough Syrup",
-        },
-        {
-            id: 2,
-            studentName: "Aarav Sharma",
-            studentID: "24BCE5274",
-            visitDate: "2026-01-14",
-            sickness: "Migraine",
-            doctorName: "Dr. S. Mehta",
-            prescription: "Pain Reliever, Rest",
-        },
-        {
-            id: 3,
-            studentName: "Aarav Sharma",
-            studentID: "24BCE5274",
-            visitDate: "2026-01-18",
-            sickness: "Stomach Ache",
-            doctorName: "Dr. P. Singh",
-            prescription: "Antacids, Fluids",
-        }
-    ];
+    const [appointments, setAppointments] = useState([]);
 
-    const filteredVisits = wardVisits.filter((v) =>
-        v.sickness.toLowerCase().includes(search.toLowerCase()) ||
-        v.visitDate.includes(search)
+    useEffect(() => {
+        async function fetchAppointments() {
+            const token = localStorage.getItem("token");
+
+            const res = await fetch("http://localhost:4000/api/appointments/parent", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setAppointments(data.data);
+            }
+        }
+
+        fetchAppointments();
+    }, []);
+
+
+    const filteredVisits = appointments.filter((v) =>
+        v.reason.toLowerCase().includes(search.toLowerCase()) ||
+        new Date(v.date).toLocaleDateString().includes(search)
     );
 
     return (
@@ -45,12 +37,12 @@ export default function ParentDashboard() {
             <h1>Parent Dashboard</h1>
 
             <div className="dashboard-actions">
-                <input 
-                    type="text" 
-                    placeholder="Search by Student ID or Name" 
+                <input
+                    type="text"
+                    placeholder="Search by Student ID or Name"
                     className="search-bar"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)} 
+                    onChange={(e) => setSearch(e.target.value)}
                 />
                 <button className="secondary-btn">
                     <FilterIcon size={18} />
@@ -66,12 +58,16 @@ export default function ParentDashboard() {
                 ) : (
                     filteredVisits.map((visit) => (
                         <div className="prescription-card" key={visit.id}>
-                            <p><strong>Student:</strong> {visit.studentName}</p>
-                            <p><strong>Student ID:</strong> {visit.studentID}</p>
-                            <p><strong>Date:</strong> {visit.visitDate}</p>
-                            <p><strong>Sickness:</strong> {visit.sickness}</p>
-                            <p><strong>Doctor:</strong> {visit.doctorName}</p>
-                            <p><strong>Prescription:</strong> {visit.prescription}</p>
+                            <p><strong>Date:</strong> {new Date(visit.date).toLocaleDateString()} {visit.time ? visit.time : null}</p>
+                            <p><strong>Reason:</strong> {visit.reason}</p>
+                            <p><strong>Status:</strong> {visit.status}</p>
+
+                            {visit.status === "completed" && (
+                                <>
+                                    <p><strong>Diagnosis:</strong> {visit.diagnosis}</p>
+                                    <p><strong>Prescription:</strong> {visit.prescription}</p>
+                                </>
+                            )}
                         </div>
                     ))
                 )}

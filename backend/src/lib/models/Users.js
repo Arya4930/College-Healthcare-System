@@ -62,6 +62,7 @@ userSchema.methods.generateAccessToken = function () {
       name: this.name,
       role: this.role,
       type: this.type,
+      parent: (this.parent) ? this.parent : undefined,
     },
     secret,
     { expiresIn: "7d" }
