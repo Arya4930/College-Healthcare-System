@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../css/DoctorDashboard.css";
 import { FilterIcon, UserPlus } from "lucide-react";
 import { useEffect } from "react";
+import { APIBASE } from "../../config.js";
 
 export default function AdminDashboard({ handleRegister }) {
     const [search, setSearch] = useState("");
@@ -21,7 +22,7 @@ export default function AdminDashboard({ handleRegister }) {
         const token = localStorage.getItem("token");
         const fetchUsers = async () => {
             try {
-                const response = await fetch("http://localhost:4000/api/users", {
+                const response = await fetch(`${APIBASE}/api/users`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

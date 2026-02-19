@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
+import { APIBASE } from "../../config";
 
 export default function DoctorDashboard({ user }) {
     const [appointments, setAppointments] = useState([]);
@@ -15,7 +16,7 @@ export default function DoctorDashboard({ user }) {
     async function fetchAppointments() {
         const token = localStorage.getItem("token");
 
-        const res = await fetch("http://localhost:4000/api/appointments/doctor", {
+        const res = await fetch(`${APIBASE}/api/appointments/doctor`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -31,7 +32,7 @@ export default function DoctorDashboard({ user }) {
         async function loadAppointments() {
             const token = localStorage.getItem("token");
 
-            const res = await fetch("http://localhost:4000/api/appointments/doctor", {
+            const res = await fetch(`${APIBASE}/api/appointments/doctor`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -49,7 +50,7 @@ export default function DoctorDashboard({ user }) {
     async function handleAccept(id) {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:4000/api/appointments/accept/${id}`, {
+        const res = await fetch(`${APIBASE}/api/appointments/accept/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -68,7 +69,7 @@ export default function DoctorDashboard({ user }) {
     async function handleComplete(id) {
         const token = localStorage.getItem("token");
 
-        await fetch(`http://localhost:4000/api/appointments/complete/${id}`, {
+        await fetch(`${APIBASE}/api/appointments/complete/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

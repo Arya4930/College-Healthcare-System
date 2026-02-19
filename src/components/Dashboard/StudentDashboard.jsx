@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../css/DoctorDashboard.css";
 import { FilterIcon } from "lucide-react";
 import { useEffect } from "react";
+import { APIBASE } from "../../config.js";
 
 export default function StudentDashboard({ user }) {
     const [search, setSearch] = useState("");
@@ -19,7 +20,7 @@ export default function StudentDashboard({ user }) {
         const token = localStorage.getItem("token");
 
         try {
-            const res = await fetch("http://localhost:4000/api/appointments/book", {
+            const res = await fetch(`${APIBASE}/api/appointments/book`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -46,7 +47,7 @@ export default function StudentDashboard({ user }) {
         const fetchAllAppointments = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await fetch("http://localhost:4000/api/appointments", {
+                const res = await fetch(`${APIBASE}/api/appointments`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },

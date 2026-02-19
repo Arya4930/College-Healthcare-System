@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
 import { FilterIcon } from "lucide-react";
+import { APIBASE } from "../../config.js";
 
 export default function ParentDashboard() {
     const [search, setSearch] = useState("");
@@ -11,7 +12,7 @@ export default function ParentDashboard() {
         async function fetchAppointments() {
             const token = localStorage.getItem("token");
 
-            const res = await fetch("http://localhost:4000/api/appointments/parent", {
+            const res = await fetch(`${APIBASE}/api/appointments/parent`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -13,6 +13,7 @@ import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
 import { ProtectedRoute, TypeRoute, LoggedIn } from './protectedRoutes.jsx';
 import Header from './components/Header.jsx';
 import { useState, useEffect } from 'react';
+import { APIBASE } from './config.js';
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -29,7 +30,7 @@ export default function App() {
           return;
         }
 
-        const res = await fetch(`http://localhost:4000/api/auth/verify`, {
+        const res = await fetch(`${APIBASE}/api/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -56,7 +57,7 @@ export default function App() {
 
   async function handleLogin(LoginData) {
     try {
-      const res = await fetch(`http://localhost:4000/api/auth/login`, {
+      const res = await fetch(`${APIBASE}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(LoginData),
@@ -87,7 +88,7 @@ export default function App() {
 
       if (!token) return "Not authenticated";
 
-      const res = await fetch(`http://localhost:4000/api/auth/register`, {
+      const res = await fetch(`${APIBASE}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
