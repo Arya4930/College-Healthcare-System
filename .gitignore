@@ -44,3 +44,4 @@ certificates
 
 public/sw.js
 public/swe-worker-development.js
+dist

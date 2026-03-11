@@ -4,9 +4,29 @@ import { FilterIcon, UserPlus } from "lucide-react";
 import { useEffect } from "react";
 import { APIBASE } from "../../config.js";
 
+// e.g. JSON for bulk user creation
+// [
+//   {
+//     "name": "Alice",
+//     "ID": "alice01",
+//     "password": "pass123",
+//     "type": "student",
+//     "role": "user",
+//     "parent": "parent01"
+//   },
+//   {
+//     "name": "Dr. Kumar",
+//     "ID": "doc01",
+//     "password": "pass123",
+//     "type": "doctor",
+//     "role": "user"
+//   }
+// ]
+
 export default function AdminDashboard({ handleRegister }) {
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState([]);
+    const [bulkJSON, setBulkJSON] = useState("");
 
     const [newUser, setNewUser] = useState({
         name: "",
@@ -72,6 +92,34 @@ export default function AdminDashboard({ handleRegister }) {
                 role: "user"
             });
         }
+    }
+
+    async function handleBulkCreate(e) {
+        e.preventDefault();
+
+        let parsed;
+
+        try {
+            parsed = JSON.parse(bulkJSON);
+        } catch {
+            alert("Invalid JSON format");
+            return;
+        }
+
+        if (!Array.isArray(parsed)) {
+            alert("JSON must be an array of users");
+            return;
+        }
+
+        for (const user of parsed) {
+            const error = await handleRegister(user);
+            if (error) {
+                console.error("Error creating user:", error);
+            }
+        }
+
+        alert("Bulk user creation complete");
+        setBulkJSON("");
     }
 
     return (
@@ -156,6 +204,33 @@ export default function AdminDashboard({ handleRegister }) {
                             Add User
                         </button>
                     </form>
+                    <div className="prescription-list" style={{ marginTop: "30px" }}>
+                        <h2>Bulk Create Users (Paste JSON)</h2>
+
+                        <div className="prescription-card">
+
+                            <textarea
+                                placeholder={`Paste JSON like:
+[
+  { "name": "John Doe", "ID": "john1", "password": "123", "type": "student", "role": "user" },
+  { "name": "Jane Smith", "ID": "jane1", "password": "123", "type": "doctor", "role": "user" }
+]`}
+                                className="search-bar"
+                                style={{ width: "100%", height: "160px" }}
+                                value={bulkJSON}
+                                onChange={(e) => setBulkJSON(e.target.value)}
+                            />
+
+                            <button
+                                className="primary-btn"
+                                style={{ marginTop: "10px" }}
+                                onClick={handleBulkCreate}
+                            >
+                                Add Users from JSON
+                            </button>
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
