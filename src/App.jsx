@@ -12,6 +12,10 @@ import DoctorDashboard from './components/Dashboard/DoctorDashboard.jsx';
 import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
 import { ProtectedRoute, TypeRoute, LoggedIn } from './protectedRoutes.jsx';
 import Header from './components/Header.jsx';
+import TermsOfService from './components/Info/TermsOfService.jsx';
+import PrivacyPolicy from './components/Info/PrivacyPolicy.jsx';
+import ContactPage from './components/Info/ContactPage.jsx';
+import AboutUs from './components/Info/AboutUs.jsx';
 import { useState, useEffect } from 'react';
 import { APIBASE } from './config.js';
 
@@ -74,8 +78,8 @@ export default function App() {
 
       if (data.data?.user) {
         setUser(data.data.user);
+        setLoggedIn(true);
       }
-      window.location.reload();
 
     } catch (err) {
       return err instanceof Error ? err.message : "Unknown error during login";
@@ -101,8 +105,6 @@ export default function App() {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message);
-
-      alert("User created successfully!");
     } catch (err) {
       return err instanceof Error ? err.message : "Unknown error during registration";
     }
@@ -114,7 +116,12 @@ export default function App() {
   }
 
   if (authLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="app-loading-screen" role="status" aria-live="polite">
+        <div className="app-loading-spinner" aria-hidden="true"></div>
+        <p>Checking session...</p>
+      </div>
+    );
   }
 
   return (
@@ -123,6 +130,10 @@ export default function App() {
       <div style={{ height: '60px' }}></div>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/about-us" element={<AboutUs />} />
         <Route
           path="login-student"
           element={

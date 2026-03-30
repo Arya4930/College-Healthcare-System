@@ -28,6 +28,27 @@
     background-color: #0056b3;
 }
 
+.primary-btn:disabled {
+    background-color: #6ea8e8;
+    cursor: not-allowed;
+}
+
+.btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-loader {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: btn-spin 0.8s linear infinite;
+}
+
 .secondary-btn {
     padding: 10px 16px;
     background-color: #e9ecef;
@@ -88,4 +109,30 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+.dashboard-modal {
+    background: #ffffff;
+    border-radius: 10px;
+    width: min(420px, 90vw);
+    padding: 22px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.dashboard-modal h3 {
+    margin: 0 0 10px;
+    color: #1a4ed8;
+}
+
+.dashboard-modal p {
+    margin: 0 0 18px;
+    color: #333;
+    line-height: 1.5;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

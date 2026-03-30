@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../css/Login.css";
 import admin from "/assets/admin.png"; // optional image
 import { Link } from "react-router-dom";
+import LoginFailedModal from "./LoginFailedModal";
 
 export default function LoginAdmin({ handleLogin }) {
     const [formData, setFormData] = useState({
@@ -11,19 +12,34 @@ export default function LoginAdmin({ handleLogin }) {
     });
 
     const [error, setError] = useState(null);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    function showLoginError(message) {
+        setError(message);
+        setShowErrorModal(true);
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (isLoading) return;
+
         if (!formData.ID || !formData.password) {
-            setError("Please fill in all fields");
+            showLoginError("Please fill in all fields");
             return;
         }
 
-        const errMessage = await handleLogin(formData);
+        setIsLoading(true);
 
-        if (errMessage) {
-            setError(errMessage);
+        try {
+            const errMessage = await handleLogin(formData);
+
+            if (errMessage) {
+                showLoginError(errMessage);
+            }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -49,6 +65,7 @@ export default function LoginAdmin({ handleLogin }) {
                                     ID: e.target.value,
                                 });
                                 setError(null);
+                                setShowErrorModal(false);
                             }}
                         />
                     </div>
@@ -65,14 +82,16 @@ export default function LoginAdmin({ handleLogin }) {
                                     password: e.target.value,
                                 });
                                 setError(null);
+                                setShowErrorModal(false);
                             }}
                         />
                     </div>
 
-                    {error && <p className="error">{error}</p>}
-
-                    <button type="submit" className="login-btn">
-                        Login
+                    <button type="submit" className="login-btn" disabled={isLoading} aria-busy={isLoading}>
+                        <span className="login-btn-content">
+                            {isLoading && <span className="login-btn-loader" aria-hidden="true"></span>}
+                            {isLoading ? "Logging in..." : "Login"}
+                        </span>
                     </button>
                 </form>
 
@@ -81,6 +100,16 @@ export default function LoginAdmin({ handleLogin }) {
                     <Link to="/">Back Home</Link>
                 </div>
             </div>
+
+            {showErrorModal && (
+                <LoginFailedModal
+                    message={error}
+                    onClose={() => {
+                        setShowErrorModal(false);
+                        setError(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

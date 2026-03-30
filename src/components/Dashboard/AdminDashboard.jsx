@@ -27,6 +27,13 @@ export default function AdminDashboard({ handleRegister }) {
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState([]);
     const [bulkJSON, setBulkJSON] = useState("");
+    const [isCreateLoading, setIsCreateLoading] = useState(false);
+    const [isBulkLoading, setIsBulkLoading] = useState(false);
+    const [modalState, setModalState] = useState({
+        open: false,
+        title: "",
+        message: "",
+    });
 
     const [newUser, setNewUser] = useState({
         name: "",
@@ -37,30 +44,40 @@ export default function AdminDashboard({ handleRegister }) {
         parent: "",
     });
 
+    function showModal(title, message) {
+        setModalState({
+            open: true,
+            title,
+            message,
+        });
+    }
+
+    async function fetchUsers() {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`${APIBASE}/api/users`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setUsers(data.data);
+            } else {
+                console.error("Failed to fetch users:", data.message);
+            }
+        } catch (err) {
+            console.error("Error fetching users:", err);
+        }
+    }
+
     useEffect(() => {
         document.title = "Admin Dashboard - College Health System";
-        const token = localStorage.getItem("token");
-        const fetchUsers = async () => {
-            try {
-                const response = await fetch(`${APIBASE}/api/users`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    credentials: "include",
-                });
-                const data = await response.json();
-
-                if (data.success) {
-                    setUsers(data.data);
-                } else {
-                    console.error("Failed to fetch users:", data.message);
-                }
-            } catch (err) {
-                console.error("Error fetching users:", err);
-            }
-        };
         fetchUsers();
     }, []);
 
@@ -74,52 +91,108 @@ export default function AdminDashboard({ handleRegister }) {
     async function handleCreateUser(e) {
         e.preventDefault();
 
+        if (isCreateLoading) return;
+
         if (!newUser.name || !newUser.ID || !newUser.password) {
-            alert("Please fill all fields");
+            showModal("Missing Fields", "Please fill all required user fields before creating a user.");
             return;
         }
 
-        const error = await handleRegister(newUser);
+        setIsCreateLoading(true);
 
-        if (error) {
-            alert(error);
-        } else {
+        try {
+            const error = await handleRegister(newUser);
+
+            if (error) {
+                showModal("Create User Failed", error);
+                return;
+            }
+
             setNewUser({
                 name: "",
                 ID: "",
                 password: "",
                 type: "student",
-                role: "user"
+                role: "user",
+                parent: "",
             });
+
+            await fetchUsers();
+            showModal("User Added", "The user has been created successfully.");
+        } finally {
+            setIsCreateLoading(false);
         }
     }
 
     async function handleBulkCreate(e) {
         e.preventDefault();
 
+        if (isBulkLoading) return;
+
         let parsed;
 
         try {
             parsed = JSON.parse(bulkJSON);
         } catch {
-            alert("Invalid JSON format");
+            showModal("Invalid JSON", "Please provide a valid JSON array of user objects.");
             return;
         }
 
         if (!Array.isArray(parsed)) {
-            alert("JSON must be an array of users");
+            showModal("Invalid JSON", "JSON must be an array of users.");
             return;
         }
 
+        const seen = new Set();
+        const uniqueUsers = [];
+        let skippedInPayload = 0;
+
         for (const user of parsed) {
-            const error = await handleRegister(user);
-            if (error) {
-                console.error("Error creating user:", error);
+            const normalizedId = String(user?.ID || "").trim().toLowerCase();
+            if (!normalizedId) {
+                skippedInPayload += 1;
+                continue;
             }
+
+            if (seen.has(normalizedId)) {
+                skippedInPayload += 1;
+                continue;
+            }
+
+            seen.add(normalizedId);
+            uniqueUsers.push(user);
         }
 
-        alert("Bulk user creation complete");
-        setBulkJSON("");
+        if (uniqueUsers.length === 0) {
+            showModal("No Valid Users", "No valid unique users found in JSON.");
+            return;
+        }
+
+        setIsBulkLoading(true);
+
+        let addedCount = 0;
+        let failedCount = 0;
+
+        try {
+            for (const user of uniqueUsers) {
+                const error = await handleRegister(user);
+                if (error) {
+                    failedCount += 1;
+                } else {
+                    addedCount += 1;
+                }
+            }
+
+            await fetchUsers();
+
+            showModal(
+                "Bulk Upload Complete",
+                `Added: ${addedCount} | Failed: ${failedCount} | Skipped duplicates/invalid in JSON: ${skippedInPayload}`
+            );
+            setBulkJSON("");
+        } finally {
+            setIsBulkLoading(false);
+        }
     }
 
     return (
@@ -200,8 +273,11 @@ export default function AdminDashboard({ handleRegister }) {
                             </select>
                         )}
 
-                        <button type="submit" className="primary-btn">
-                            Add User
+                        <button type="submit" className="primary-btn" disabled={isCreateLoading} aria-busy={isCreateLoading}>
+                            <span className="btn-content">
+                                {isCreateLoading && <span className="btn-loader" aria-hidden="true"></span>}
+                                {isCreateLoading ? "Adding User..." : "Add User"}
+                            </span>
                         </button>
                     </form>
                     <div className="prescription-list" style={{ marginTop: "30px" }}>
@@ -225,8 +301,13 @@ export default function AdminDashboard({ handleRegister }) {
                                 className="primary-btn"
                                 style={{ marginTop: "10px" }}
                                 onClick={handleBulkCreate}
+                                disabled={isBulkLoading}
+                                aria-busy={isBulkLoading}
                             >
-                                Add Users from JSON
+                                <span className="btn-content">
+                                    {isBulkLoading && <span className="btn-loader" aria-hidden="true"></span>}
+                                    {isBulkLoading ? "Adding Users..." : "Add Users from JSON"}
+                                </span>
                             </button>
 
                         </div>
@@ -268,6 +349,22 @@ export default function AdminDashboard({ handleRegister }) {
                     ))
                 )}
             </div>
+
+            {modalState.open && (
+                <div className="modal-overlay" onClick={() => setModalState({ ...modalState, open: false })}>
+                    <div className="dashboard-modal" onClick={(e) => e.stopPropagation()}>
+                        <h3>{modalState.title}</h3>
+                        <p>{modalState.message}</p>
+                        <button
+                            className="primary-btn"
+                            type="button"
+                            onClick={() => setModalState({ ...modalState, open: false })}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

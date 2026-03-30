@@ -19,7 +19,14 @@ export function TypeRoute({ user, allowedTypes, children }) {
 
 export function LoggedIn({ user, children }) {
     if(user) {
-        return <Navigate to="/" replace />;
+        const dashboardByType = {
+            student: "/student-dashboard",
+            parent: "/parent-dashboard",
+            doctor: "/doctor-dashboard",
+            admin: "/admin-dashboard",
+        };
+
+        return <Navigate to={dashboardByType[user.type] || "/"} replace />;
     }
     return children;
 }

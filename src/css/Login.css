@@ -69,6 +69,27 @@
     background: #0056b3;
 }
 
+.login-btn:disabled {
+    background: #6ea8e8;
+    cursor: not-allowed;
+}
+
+.login-btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.login-btn-loader {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: login-btn-spin 0.8s linear infinite;
+}
+
 .error {
     color: red;
     margin-bottom: 15px;
@@ -88,4 +109,70 @@
 
 .links a:hover {
     text-decoration: underline;
+}
+
+.login-failed-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    padding: 16px;
+}
+
+.login-failed-modal {
+    width: min(420px, 100%);
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+    padding: 24px;
+    text-align: center;
+    animation: login-failed-modal-enter 0.2s ease-out;
+}
+
+.login-failed-modal h2 {
+    margin: 0 0 10px;
+    color: #a01c1c;
+}
+
+.login-failed-modal p {
+    margin: 0;
+    color: #333333;
+    font-size: 15px;
+}
+
+.login-failed-modal-btn {
+    margin-top: 18px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 14px;
+    background: #d33333;
+    color: #ffffff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-failed-modal-btn:hover {
+    background: #b12626;
+}
+
+@keyframes login-failed-modal-enter {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes login-btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

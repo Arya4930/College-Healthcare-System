@@ -59,14 +59,16 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const existingUser = await User.findOne({ ID, type });
+        const normalizedId = String(ID).trim().toLowerCase();
+
+        const existingUser = await User.findOne({ ID: normalizedId });
         if (existingUser) {
-            return res.status(409).json({ success: false, message: "User already exists with this type" });
+            return res.status(409).json({ success: false, message: "User already exists" });
         }
 
         const user = await User.create({
             name,
-            ID,
+            ID: normalizedId,
             password,
             type,
             role,
@@ -85,6 +87,11 @@ router.post("/", async (req, res) => {
 
     } catch (error) {
         console.error("Register error:", error);
+
+        if (error?.code === 11000) {
+            return res.status(409).json({ success: false, message: "User already exists" });
+        }
+
         return res.status(500).json({ success: false, message: "Server error" });
     }
 });

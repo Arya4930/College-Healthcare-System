@@ -1,4 +1,5 @@
 import "../css/Footer.css";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -8,9 +9,10 @@ export default function Footer() {
       </div>
 
       <div className="footer-right">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Contact</a>
+        <Link to="/privacy-policy">Privacy Policy</Link>
+        <Link to="/terms-of-service">Terms of Service</Link>
+        <Link to="/contact">Contact</Link>
+        <Link to="/about-us">About Us</Link>
       </div>
     </footer>
   );

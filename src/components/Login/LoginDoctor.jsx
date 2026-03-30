@@ -2,6 +2,7 @@ import { useState } from "react";
 import "../../css/Login.css";
 import doctor from "/assets/doctor.png";
 import { Link } from "react-router-dom";
+import LoginFailedModal from "./LoginFailedModal";
 
 export default function LoginDoctor({ handleLogin }) {
     const [formData, SetFormData] = useState({
@@ -11,17 +12,35 @@ export default function LoginDoctor({ handleLogin }) {
     });
 
     const [error, SetError] = useState(null);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    function showLoginError(message) {
+        SetError(message);
+        setShowErrorModal(true);
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (isLoading) return;
+
         if (!formData.ID || !formData.password) {
-            SetError("Please fill in all fields");
+            showLoginError("Please fill in all fields");
             return;
         }
 
-        SetError("");
-        handleLogin(formData);
+        setIsLoading(true);
+
+        try {
+            const errMessage = await handleLogin(formData);
+
+            if (errMessage) {
+                showLoginError(errMessage);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -38,7 +57,7 @@ export default function LoginDoctor({ handleLogin }) {
                             name="ID"
                             placeholder="Enter your ID"
                             value={formData.ID}
-                            onChange={(e) => { SetFormData({ ...formData, ID: e.target.value }); SetError(null) }}
+                            onChange={(e) => { SetFormData({ ...formData, ID: e.target.value }); SetError(null); setShowErrorModal(false); }}
                         />
                     </div>
 
@@ -50,13 +69,16 @@ export default function LoginDoctor({ handleLogin }) {
                             name="password"
                             placeholder="Enter your password"
                             value={formData.password}
-                            onChange={(e) => { SetFormData({ ...formData, password: e.target.value }); SetError(null) }}
+                            onChange={(e) => { SetFormData({ ...formData, password: e.target.value }); SetError(null); setShowErrorModal(false); }}
                         />
                     </div>
 
-                    {error && <p className="error">{error}</p>}
-
-                    <button type="submit" className="login-btn">Login</button>
+                    <button type="submit" className="login-btn" disabled={isLoading} aria-busy={isLoading}>
+                        <span className="login-btn-content">
+                            {isLoading && <span className="login-btn-loader" aria-hidden="true"></span>}
+                            {isLoading ? "Logging in..." : "Login"}
+                        </span>
+                    </button>
                 </form>
 
                 <div className="links">
@@ -64,6 +86,16 @@ export default function LoginDoctor({ handleLogin }) {
                     <Link to="/">Back Home</Link>
                 </div>
             </div>
+
+            {showErrorModal && (
+                <LoginFailedModal
+                    message={error}
+                    onClose={() => {
+                        setShowErrorModal(false);
+                        SetError(null);
+                    }}
+                />
+            )}
         </div>
     )
 }
