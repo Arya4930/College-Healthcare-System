@@ -119,7 +119,6 @@ export default function App() {
     return (
       <div className="app-loading-screen" role="status" aria-live="polite">
         <div className="app-loading-spinner" aria-hidden="true"></div>
-        <p>Checking session...</p>
       </div>
     );
   }

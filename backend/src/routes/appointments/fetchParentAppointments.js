@@ -39,10 +39,24 @@ router.get("/parent", async (req, res) => {
             parent: user.ID
         });
 
+        const doctorIds = [...new Set(
+            appointments
+                .map((appointment) => appointment.doctor)
+                .filter(Boolean)
+        )];
+
+        const doctorUsers = await User.find({ ID: { $in: doctorIds } }).select("ID phone");
+        const doctorPhoneMap = new Map(doctorUsers.map((doctorUser) => [doctorUser.ID, doctorUser.phone]));
+
+        const data = appointments.map((appointment) => ({
+            ...appointment.toObject(),
+            doctorPhone: doctorPhoneMap.get(appointment.doctor) || "",
+        }));
+
         return res.status(200).json({
             success: true,
             message: "Appointments fetched successfully",
-            data: appointments,
+            data,
         });
 
     } catch (err) {

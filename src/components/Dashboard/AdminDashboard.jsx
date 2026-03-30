@@ -19,7 +19,8 @@ import { APIBASE } from "../../config.js";
 //     "ID": "doc01",
 //     "password": "pass123",
 //     "type": "doctor",
-//     "role": "user"
+//     "role": "user",
+//     "phone": "9876543210"
 //   }
 // ]
 
@@ -42,6 +43,7 @@ export default function AdminDashboard({ handleRegister }) {
         type: "student",
         role: "user",
         parent: "",
+        phone: "",
     });
 
     function showModal(title, message) {
@@ -115,6 +117,7 @@ export default function AdminDashboard({ handleRegister }) {
                 type: "student",
                 role: "user",
                 parent: "",
+                phone: "",
             });
 
             await fetchUsers();
@@ -247,6 +250,7 @@ export default function AdminDashboard({ handleRegister }) {
                                     ...newUser,
                                     type: e.target.value,
                                     parent: "",
+                                    phone: ["doctor", "parent"].includes(e.target.value) ? newUser.phone : "",
                                 })
                             }
                         >
@@ -255,6 +259,20 @@ export default function AdminDashboard({ handleRegister }) {
                             <option value="parent">Parent</option>
                             <option value="admin">Admin</option>
                         </select>
+
+                        {["doctor", "parent"].includes(newUser.type) && (
+                            <input
+                                type="text"
+                                placeholder="Phone Number (optional)"
+                                className="search-bar"
+                                style={{ width: "100%" }}
+                                value={newUser.phone}
+                                onChange={(e) =>
+                                    setNewUser({ ...newUser, phone: e.target.value })
+                                }
+                            />
+                        )}
+
                         {newUser.type === "student" && parents.length > 0 && (
                             <select
                                 className="search-bar"
@@ -342,6 +360,7 @@ export default function AdminDashboard({ handleRegister }) {
                             <p><strong>User ID:</strong> {user.ID}</p>
                             <p><strong>Type:</strong> {user.type}</p>
                             <p><strong>Role:</strong> {user.role}</p>
+                            {user.phone && <p><strong>Phone:</strong> {user.phone}</p>}
                             {user.type === "student" && user.parent && (
                                 <p><strong>Parent:</strong> {user.parent}</p>
                             )}

@@ -30,6 +30,10 @@ const userSchema = new Schema(
     parent: {
       type: String,
     },
+    phone: {
+      type: String,
+      trim: true,
+    },
     refreshToken: {
       type: String,
     },

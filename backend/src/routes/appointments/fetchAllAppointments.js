@@ -34,8 +34,7 @@ router.get("/", async (req, res) => {
                 message: "Only students can book appointments",
             });
         }
-
-        const appointments = await Appointment.find({ student: user._id })
+        const appointments = await Appointment.find({ student: user.ID })
         const doctorIDs = [
             ...new Set(
                 appointments
@@ -46,16 +45,37 @@ router.get("/", async (req, res) => {
 
         const doctors = await User.find({
             ID: { $in: doctorIDs }
-        }).select("ID name");
+        }).select("ID name phone");
+
+        const parentIDs = [
+            ...new Set(
+                appointments
+                    .map(a => a.parent)
+                    .filter(Boolean)
+            )
+        ];
+
+        const parents = await User.find({
+            ID: { $in: parentIDs }
+        }).select("ID phone");
 
         const doctorMap = {};
+        const doctorPhoneMap = {};
         doctors.forEach(doc => {
             doctorMap[doc.ID] = doc.name;
+            doctorPhoneMap[doc.ID] = doc.phone || "";
+        });
+
+        const parentPhoneMap = {};
+        parents.forEach(parent => {
+            parentPhoneMap[parent.ID] = parent.phone || "";
         });
 
         const enrichedAppointments = appointments.map(app => ({
             ...app._doc,
-            doctorName: doctorMap[app.doctor] || null
+            doctorName: doctorMap[app.doctor] || null,
+            doctorPhone: doctorPhoneMap[app.doctor] || "",
+            parentPhone: parentPhoneMap[app.parent] || "",
         }));
 
         return res.status(201).json({

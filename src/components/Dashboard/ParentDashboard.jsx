@@ -3,7 +3,7 @@ import "../../css/DoctorDashboard.css";
 import { FilterIcon } from "lucide-react";
 import { APIBASE } from "../../config.js";
 
-export default function ParentDashboard() {
+export default function ParentDashboard({ user }) {
     const [search, setSearch] = useState("");
 
     const [appointments, setAppointments] = useState([]);
@@ -36,6 +36,8 @@ export default function ParentDashboard() {
     return (
         <div className="doctor-dashboard">
             <h1>Parent Dashboard</h1>
+            <p><strong>Parent Name: </strong>{user?.name}</p>
+            {user?.phone && <p><strong>Parent Phone: </strong>{user.phone}</p>}
 
             <div className="dashboard-actions">
                 <input
@@ -62,6 +64,7 @@ export default function ParentDashboard() {
                             <p><strong>Date:</strong> {new Date(visit.date).toLocaleDateString()} {visit.time ? visit.time : null}</p>
                             <p><strong>Reason:</strong> {visit.reason}</p>
                             <p><strong>Status:</strong> {visit.status}</p>
+                            {visit.doctorPhone && <p><strong>Doctor Phone:</strong> {visit.doctorPhone}</p>}
 
                             {visit.status === "completed" && (
                                 <>

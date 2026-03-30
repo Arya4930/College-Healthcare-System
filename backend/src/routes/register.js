@@ -50,7 +50,7 @@ router.post("/", async (req, res) => {
             });
         }
 
-        const { name, ID, password, type, role, parent = ""} = req.body;
+        const { name, ID, password, type, role, parent = "", phone = "" } = req.body;
 
         if (!name || !ID || !password || !type || !role) {
             return res.status(400).json({
@@ -73,6 +73,7 @@ router.post("/", async (req, res) => {
             type,
             role,
             parent: type === "student" ? parent : undefined,
+            phone: ["doctor", "parent"].includes(type) && phone ? String(phone).trim() : undefined,
         });
 
         const { accessToken } = await generateAccessAndRefreshToken(user._id);

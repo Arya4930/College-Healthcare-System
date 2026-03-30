@@ -31,15 +31,46 @@ router.put("/accept/:id", async (req, res) => {
         if (user.type !== "doctor") {
             return res.status(403).json({
                 success: false,
-                message: "Only students can book appointments",
+                message: "Only doctors can update appointments",
             });
         }
-        const { time } = req.body;
+        const { time, date } = req.body;
 
-        if (!time) {
+        if (!time || !date) {
             return res.status(400).json({
                 success: false,
-                message: "Time required"
+                message: "Date and time are required"
+            });
+        }
+
+        const parsedDate = new Date(date);
+        if (Number.isNaN(parsedDate.getTime())) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid appointment date"
+            });
+        }
+
+        const existingAppointment = await Appointment.findById(req.params.id);
+
+        if (!existingAppointment) {
+            return res.status(404).json({
+                success: false,
+                message: "Appointment not found"
+            });
+        }
+
+        if (existingAppointment.status === "completed") {
+            return res.status(400).json({
+                success: false,
+                message: "Completed appointments cannot be rescheduled"
+            });
+        }
+
+        if (existingAppointment.doctor && existingAppointment.doctor !== user.ID) {
+            return res.status(403).json({
+                success: false,
+                message: "You can only update appointments assigned to you"
             });
         }
 
@@ -47,6 +78,7 @@ router.put("/accept/:id", async (req, res) => {
             req.params.id,
             {
                 doctor: user.ID,
+                date: parsedDate,
                 time,
                 status: "approved"
             },
@@ -59,6 +91,7 @@ router.put("/accept/:id", async (req, res) => {
         });
 
     } catch (err) {
+        console.error(err);
         return res.status(500).json({
             success: false,
             message: "Failed to approve appointment"

@@ -69,7 +69,7 @@ export default function StudentDashboard({ user }) {
 
     const filteredVisits = visits.filter((v) =>
         v.reason.toLowerCase().includes(search.toLowerCase()) ||
-        v.doctor.toLowerCase().includes(search.toLowerCase())
+        (v.doctor || "").toLowerCase().includes(search.toLowerCase())
     );
 
     return (
@@ -163,6 +163,8 @@ export default function StudentDashboard({ user }) {
                             <p><strong>Reason:</strong> {visit.reason}</p>
                             <p><strong>Status:</strong> {visit.status}</p>
                             {visit.doctor && <p><strong>Doctor:</strong> {visit.doctorName}</p>}
+                            {visit.doctorPhone && <p><strong>Doctor Phone:</strong> {visit.doctorPhone}</p>}
+                            {visit.parentPhone && <p><strong>Parent Phone:</strong> {visit.parentPhone}</p>}
                             {visit.diagnosis && <p><strong>Diagnosis:</strong> {visit.diagnosis}</p>}
                             {visit.prescription && <p><strong>Prescription:</strong> {visit.prescription}</p>}
                         </div>

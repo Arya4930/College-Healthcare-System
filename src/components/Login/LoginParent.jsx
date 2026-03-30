@@ -50,7 +50,7 @@ export default function LoginParent({ handleLogin }) {
                 <p>Login to view your ward's prescriptions</p>
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Ward ID</label>
+                        <label>Parent ID</label>
                         <input
                             type="text"
                             id="ID"
