@@ -1,12 +1,15 @@
 import { useState } from "react";
 import "../../css/DoctorDashboard.css";
-import { FilterIcon } from "lucide-react";
 import { useEffect } from "react";
 import { APIBASE } from "../../config.js";
 
 export default function StudentDashboard({ user }) {
     const [search, setSearch] = useState("");
     const [visits, setVisits] = useState([]);
+    const [filterType, setFilterType] = useState("status");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("");
+    const [prescriptionFilter, setPrescriptionFilter] = useState("");
 
     const [showModal, setShowModal] = useState(false);
     const [appointmentData, setAppointmentData] = useState({
@@ -67,10 +70,31 @@ export default function StudentDashboard({ user }) {
         fetchAllAppointments();
     }, []);
 
-    const filteredVisits = visits.filter((v) =>
-        v.reason.toLowerCase().includes(search.toLowerCase()) ||
-        (v.doctor || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredVisits = visits
+        .filter((v) =>
+            v.reason.toLowerCase().includes(search.toLowerCase()) ||
+            (v.doctor || "").toLowerCase().includes(search.toLowerCase())
+        )
+        .filter((v) => {
+            if (filterType === "status") {
+                return statusFilter === "all" ? true : v.status === statusFilter;
+            }
+
+            if (filterType === "date") {
+                if (!dateFilter) return true;
+                const visitDate = new Date(v.date).toISOString().slice(0, 10);
+                return visitDate === dateFilter;
+            }
+
+            if (filterType === "prescription") {
+                if (!prescriptionFilter.trim()) return true;
+                return (v.prescription || "")
+                    .toLowerCase()
+                    .includes(prescriptionFilter.toLowerCase());
+            }
+
+            return true;
+        });
 
     return (
         <div className="doctor-dashboard">
@@ -138,10 +162,49 @@ export default function StudentDashboard({ user }) {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="secondary-btn">
-                    <FilterIcon size={18} />
-                    <span>Filter</span>
-                </button>
+
+                <select
+                    className="search-bar"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                >
+                    <option value="status">Filter: Status</option>
+                    <option value="date">Filter: Date</option>
+                    <option value="prescription">Filter: Prescription</option>
+                </select>
+
+                {filterType === "status" && (
+                    <select
+                        className="search-bar"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                )}
+
+                {filterType === "date" && (
+                    <input
+                        type="date"
+                        className="search-bar"
+                        value={dateFilter}
+                        onChange={(e) => setDateFilter(e.target.value)}
+                    />
+                )}
+
+                {filterType === "prescription" && (
+                    <input
+                        type="text"
+                        placeholder="Filter by prescription"
+                        className="search-bar"
+                        value={prescriptionFilter}
+                        onChange={(e) => setPrescriptionFilter(e.target.value)}
+                    />
+                )}
+
                 <button
                     className="primary-btn"
                     onClick={() => setShowModal(true)}

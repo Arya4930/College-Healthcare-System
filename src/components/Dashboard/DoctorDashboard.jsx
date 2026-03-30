@@ -5,6 +5,10 @@ import { APIBASE } from "../../config";
 export default function DoctorDashboard({ user }) {
     const [appointments, setAppointments] = useState([]);
     const [search, setSearch] = useState("");
+    const [filterType, setFilterType] = useState("status");
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [dateFilter, setDateFilter] = useState("");
+    const [prescriptionFilter, setPrescriptionFilter] = useState("");
     const [schedulingId, setSchedulingId] = useState(null);
     const [scheduleInput, setScheduleInput] = useState({ date: "", time: "" });
     const [prescriptionModal, setPrescriptionModal] = useState(null);
@@ -104,9 +108,28 @@ export default function DoctorDashboard({ user }) {
         fetchAppointments();
     }
 
-    const filtered = appointments.filter(a =>
-        a.student.toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = appointments
+        .filter((a) => a.student.toLowerCase().includes(search.toLowerCase()))
+        .filter((a) => {
+            if (filterType === "status") {
+                return statusFilter === "all" ? true : a.status === statusFilter;
+            }
+
+            if (filterType === "date") {
+                if (!dateFilter) return true;
+                const appointmentDate = new Date(a.date).toISOString().slice(0, 10);
+                return appointmentDate === dateFilter;
+            }
+
+            if (filterType === "prescription") {
+                if (!prescriptionFilter.trim()) return true;
+                return (a.prescription || "")
+                    .toLowerCase()
+                    .includes(prescriptionFilter.toLowerCase());
+            }
+
+            return true;
+        });
 
     return (
         <div className="doctor-dashboard">
@@ -122,6 +145,48 @@ export default function DoctorDashboard({ user }) {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                 />
+
+                <select
+                    className="search-bar"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                >
+                    <option value="status">Filter: Status</option>
+                    <option value="date">Filter: Date</option>
+                    <option value="prescription">Filter: Prescription</option>
+                </select>
+
+                {filterType === "status" && (
+                    <select
+                        className="search-bar"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                )}
+
+                {filterType === "date" && (
+                    <input
+                        type="date"
+                        className="search-bar"
+                        value={dateFilter}
+                        onChange={(e) => setDateFilter(e.target.value)}
+                    />
+                )}
+
+                {filterType === "prescription" && (
+                    <input
+                        type="text"
+                        placeholder="Filter by prescription"
+                        className="search-bar"
+                        value={prescriptionFilter}
+                        onChange={(e) => setPrescriptionFilter(e.target.value)}
+                    />
+                )}
             </div>
 
             <div className="prescription-list">
