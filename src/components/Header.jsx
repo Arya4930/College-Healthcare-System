@@ -8,6 +8,11 @@ export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const scrollTo = (id) => {
+        const section = document.getElementById(id);
+        section?.scrollIntoView({ behavior: "smooth" });
+    };
+
     return (
         <header>
             <div className="header-left" onClick={() => navigate("/")}>
@@ -29,8 +34,19 @@ export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
                             navigate("/");
                             setMenuOpen(false);
                             setTimeout(() => {
-                                const section = document.getElementById("our-goals");
-                                section?.scrollIntoView({ behavior: "smooth" });
+                                scrollTo("affiliated-hospitals");
+                            }, 100);
+                        }}
+                    >
+                        Affiliated Hospitals
+                    </button>
+                    <button
+                        className="other-buttons"
+                        onClick={() => {
+                            navigate("/");
+                            setMenuOpen(false);
+                            setTimeout(() => {
+                                scrollTo("our-goals");
                             }, 100);
                         }}
                     >
@@ -53,7 +69,11 @@ export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
                                 <Link to="/parent-dashboard" onClick={() => setMenuOpen(false)}>Parent Dashboard</Link>
                             )}
                             {user.type === "doctor" && (
-                                <Link to="/doctor-dashboard" onClick={() => setMenuOpen(false)}>Doctor Dashboard</Link>
+                                <>
+                                    <Link to="/doctor-dashboard" onClick={() => setMenuOpen(false)}>Doctor Dashboard</Link>
+                                    <Link to="/medicines" onClick={() => setMenuOpen(false)}>Stock</Link>
+                                    <Link to="/medicines/doctor-stock-cart" onClick={() => setMenuOpen(false)}><ShoppingCart /><span style={{ fontSize: "18px" }}> Stock Cart</span></Link>
+                                </>
                             )}
 
                             <button

@@ -3,10 +3,14 @@ import { medicinesData } from './medicine-data';
 import '../css/medicine-home.css';
 import { Link } from 'react-router-dom';
 
-const MedicineHome = () => {
+const MedicineHome = ({ user }) => {
     const [medicines, setMedicines] = useState([]);
     const [cart, setCart] = useState([]);
     const [quantities, setQuantities] = useState({});
+
+    const isDoctor = user?.type === 'doctor';
+    const cartStorageKey = isDoctor ? 'doctorStockCartItems' : 'cartItems';
+    const cartRoute = isDoctor ? '/medicines/doctor-stock-cart' : '/medicines/student-cart';
 
     const initializeQuantities = () => {
         const qty = {};
@@ -17,7 +21,7 @@ const MedicineHome = () => {
     };
 
     const loadCart = () => {
-        const savedCart = localStorage.getItem('cartItems');
+        const savedCart = localStorage.getItem(cartStorageKey);
         if (savedCart) {
             setCart(JSON.parse(savedCart));
         }
@@ -27,10 +31,10 @@ const MedicineHome = () => {
         setMedicines(medicinesData);
         initializeQuantities();
         loadCart();
-    }, []);
+    }, [cartStorageKey]);
 
     const saveCart = (updatedCart) => {
-        localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+        localStorage.setItem(cartStorageKey, JSON.stringify(updatedCart));
     };
 
     const handleQuantityChange = (e, medicineId) => {
@@ -58,7 +62,7 @@ const MedicineHome = () => {
 
         setCart(updatedCart);
         saveCart(updatedCart);
-        alert(`${medicine.name} added to cart!`);
+        alert(`${medicine.name} added to ${isDoctor ? 'stock cart' : 'cart'}!`);
         setQuantities(prev => ({
             ...prev,
             [medicine.id]: 1
@@ -76,11 +80,11 @@ const MedicineHome = () => {
     return (
         <div className="medicine-home">
             <div className="medicine-header">
-                <Link to="/medicines/student-cart" className='cart-link'>
+                <Link to={cartRoute} className='cart-link'>
                     ({getTotalItems()}) - ₹{getTotalPrice()}
                 </Link>
                 <p>
-                    Ordering from XYZ Medicos ( +91 98765 43210 )
+                    {isDoctor ? 'Stock from XYZ Distributor ( +91 98765 43210 )' : 'Ordering from XYZ Medicos ( +91 98765 43210 )'}
                 </p>
             </div>
 
@@ -108,7 +112,7 @@ const MedicineHome = () => {
                                     className="add-to-cart-btn"
                                     onClick={() => addToCart(medicine)}
                                 >
-                                    Add to Cart
+                                    {isDoctor ? 'Add to Stock' : 'Add to Cart'}
                                 </button>
                             </div>
                         </div>

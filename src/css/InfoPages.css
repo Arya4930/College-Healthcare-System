@@ -78,6 +78,13 @@
     line-height: 1.6;
 }
 
+.info-team-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
 @media (max-width: 768px) {
     .info-page {
         padding: 18px 14px;

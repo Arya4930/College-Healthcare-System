@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import '../css/medicine-home.css';
 import { APIBASE } from '../../config.js';
 
-export default function Student_cart() {
+export default function Student_cart({ user }) {
     const [cart, setCart] = useState([]);
+    const isDoctor = user?.type === 'doctor';
+    const cartStorageKey = isDoctor ? 'doctorStockCartItems' : 'cartItems';
 
     const loadCart = () => {
-        const savedCart = localStorage.getItem('cartItems');
+        const savedCart = localStorage.getItem(cartStorageKey);
         if (savedCart) {
             setCart(JSON.parse(savedCart));
         }
@@ -15,10 +17,10 @@ export default function Student_cart() {
 
     useEffect(() => {
         loadCart();
-    }, []);
+    }, [cartStorageKey]);
 
     const saveCart = (updatedCart) => {
-        localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+        localStorage.setItem(cartStorageKey, JSON.stringify(updatedCart));
     };
 
     const removeFromCart = (medicineId) => {
@@ -48,7 +50,8 @@ export default function Student_cart() {
     const checkout = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await fetch(`${APIBASE}/api/medicine/checkout`, {
+            const endpoint = isDoctor ? `${APIBASE}/api/medicine/checkout/doctor/stock-checkout` : `${APIBASE}/api/medicine/checkout`;
+            const res = await fetch(endpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -59,7 +62,7 @@ export default function Student_cart() {
             if(!res.ok) {
                 throw new Error('Checkout failed');
             }
-            alert('Checkout successful! Your order has been placed.');
+            alert(isDoctor ? 'Stock checkout successful! Your stock order has been placed.' : 'Checkout successful! Your order has been placed.');
             setCart([]);
             saveCart([]);
         } catch (error) {
@@ -69,9 +72,9 @@ export default function Student_cart() {
 
     return (
         <div className="cart-section">
-            <h2>Shopping Cart</h2>
+            <h2>{isDoctor ? 'Stock Cart' : 'Shopping Cart'}</h2>
             {cart.length === 0 ? (
-                <p className="empty-cart">Your cart is empty!</p>
+                <p className="empty-cart">{isDoctor ? 'Your stock cart is empty!' : 'Your cart is empty!'}</p>
             ) : (
                 <>
                     <div className="cart-items">
@@ -104,7 +107,7 @@ export default function Student_cart() {
                     </div>
                     <div className="cart-summary">
                         <h3>Total: ₹{getTotalPrice()}</h3>
-                        <button className="checkout-btn" onClick={() => checkout()}>Proceed to Checkout</button>
+                        <button className="checkout-btn" onClick={() => checkout()}>{isDoctor ? 'Proceed to Stock Checkout' : 'Proceed to Checkout'}</button>
                     </div>
                 </>
             )}

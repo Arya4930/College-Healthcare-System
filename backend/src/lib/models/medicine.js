@@ -3,7 +3,13 @@ import { Schema } from "mongoose";
 
 const medicineSchema = new Schema(
     {
-        student_id: { type: String, required: true, index: true },
+        student_id: { type: String, index: true },
+        doctor_id: { type: String, index: true },
+        request_type: {
+            type: String,
+            enum: ["medicine", "stock"],
+            default: "medicine",
+        },
         name: { type: String, required: true },
         description: { type: String },
         price: { type: Number, required: true },

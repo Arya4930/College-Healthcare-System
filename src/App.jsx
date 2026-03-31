@@ -202,16 +202,24 @@ export default function App() {
         <Route
           path="/medicines"
           element={
-            <TypeRoute user={user} allowedTypes={["student"]}>
-              <MedicineHome />
+            <TypeRoute user={user} allowedTypes={["student", "doctor"]}>
+              <MedicineHome user={user} />
             </TypeRoute>
           }
         />
         <Route
           path="/medicines/student-cart"
           element={
-            <TypeRoute user={user} allowedTypes={["student"]}>
-              <Student_cart />
+            <TypeRoute user={user} allowedTypes={["student", "doctor"]}>
+              <Student_cart user={user} />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/medicines/doctor-stock-cart"
+          element={
+            <TypeRoute user={user} allowedTypes={["doctor"]}>
+              <Student_cart user={user} />
             </TypeRoute>
           }
         />

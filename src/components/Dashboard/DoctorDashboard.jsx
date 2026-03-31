@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
 import { APIBASE } from "../../config";
+import { medicinesData } from "../medicines/medicine-data.js";
 
 export default function DoctorDashboard({ user }) {
     const [appointments, setAppointments] = useState([]);
@@ -16,6 +17,7 @@ export default function DoctorDashboard({ user }) {
         diagnosis: "",
         prescription: ""
     });
+    const [stockOrders, setStockOrders] = useState([]);
 
     function formatDateForInput(dateValue) {
         const date = new Date(dateValue);
@@ -54,7 +56,23 @@ export default function DoctorDashboard({ user }) {
             }
         }
 
+        async function loadStockOrders() {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${APIBASE}/api/medicine/doctor`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                credentials: "include",
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                setStockOrders(data.data);
+            }
+        }
+
         loadAppointments();
+        loadStockOrders();
     }, []);
 
     async function handleAccept(id) {
@@ -363,6 +381,38 @@ export default function DoctorDashboard({ user }) {
                     </div>
                 </div>
             )}
+
+            <div className="prescription-list">
+                <h2>My Stock Orders</h2>
+
+                {stockOrders.length === 0 ? (
+                    <p>No stock orders found.</p>
+                ) : (
+                    stockOrders.map((stock) => {
+                        const medData = medicinesData.find((m) => m.name === stock.name);
+
+                        return (
+                            <div
+                                className="prescription-card"
+                                key={stock._id}
+                                style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                            >
+                                <div className="card-left">
+                                    <p><strong>Date:</strong> {new Date(stock.createdAt).toLocaleDateString()}</p>
+                                    <p><strong>Stock Item:</strong> {stock.name}</p>
+                                    <p><strong>Status:</strong> {stock.order}</p>
+                                    {stock.price && <p><strong>Price:</strong> ₹{stock.price}</p>}
+                                    {stock.quantity && <p><strong>Quantity:</strong> {stock.quantity}</p>}
+                                    {stock.description && <p><strong>Description:</strong> {stock.description}</p>}
+                                </div>
+                                <div className="card-right">
+                                    <img src={medData?.image} alt={stock.name} className="medicine-img" />
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
         </div>
     );
 }

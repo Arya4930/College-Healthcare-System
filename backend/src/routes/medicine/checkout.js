@@ -5,7 +5,7 @@ import Medicine from "../../lib/models/medicine.js";
 
 const router = express.Router();
 
-router.post("/", async (req, res) => {
+const handleCheckout = async (req, res, expectedUserType) => {
     try {
         const token =
             req.cookies?.accessToken ||
@@ -29,10 +29,12 @@ router.post("/", async (req, res) => {
             });
         }
 
-        if (user.type !== "student") {
+        if (user.type !== expectedUserType) {
             return res.status(403).json({
                 success: false,
-                message: "Only students can order medicines",
+                message: expectedUserType === "doctor"
+                    ? "Only doctors can order stock"
+                    : "Only students can order medicines",
             });
         }
 
@@ -46,7 +48,9 @@ router.post("/", async (req, res) => {
         }
 
         const medicinesToCreate = items.map((item) => ({
-            student_id: user.ID,
+            student_id: expectedUserType === "student" ? user.ID : undefined,
+            doctor_id: expectedUserType === "doctor" ? user.ID : undefined,
+            request_type: expectedUserType === "doctor" ? "stock" : "medicine",
             name: item.name,
             description: item.description || "",
             price: Number(item.price),
@@ -74,16 +78,28 @@ router.post("/", async (req, res) => {
 
         return res.status(201).json({
             success: true,
-            message: "Medicine order placed successfully",
+            message: expectedUserType === "doctor"
+                ? "Stock order placed successfully"
+                : "Medicine order placed successfully",
             data: createdOrders,
         });
     } catch (err) {
         console.error(err);
         return res.status(500).json({
             success: false,
-            message: "Failed to place medicine order",
+            message: expectedUserType === "doctor"
+                ? "Failed to place stock order"
+                : "Failed to place medicine order",
         });
     }
+};
+
+router.post("/", async (req, res) => {
+    await handleCheckout(req, res, "student");
+});
+
+router.post("/doctor/stock-checkout", async (req, res) => {
+    await handleCheckout(req, res, "doctor");
 });
 
 export default router;

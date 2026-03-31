@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "../../css/DoctorDashboard.css";
 import { APIBASE } from "../../config.js";
+import { medicinesData } from "../medicines/medicine-data.js";
 
 export default function ParentDashboard({ user }) {
     const [search, setSearch] = useState("");
@@ -8,6 +9,7 @@ export default function ParentDashboard({ user }) {
     const [statusFilter, setStatusFilter] = useState("all");
     const [dateFilter, setDateFilter] = useState("");
     const [prescriptionFilter, setPrescriptionFilter] = useState("");
+    const [medicines, setMedicines] = useState([]);
 
     const [appointments, setAppointments] = useState([]);
 
@@ -22,11 +24,31 @@ export default function ParentDashboard({ user }) {
             });
 
             const data = await res.json();
+            console.log("Fetched appointments:", data); 
             if (data.success) {
                 setAppointments(data.data);
             }
         }
+        const fetchAllMedicines = async () => {
+            try {
+                const res = await fetch(`${APIBASE}/api/medicine/parent`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    credentials: "include",
+                });
+                const data = await res.json();
 
+                if (data.success) {
+                    setMedicines(data.data);
+                } else {
+                    console.error("Failed to fetch medicines:", data.message);
+                }
+            } catch (err) {
+                console.error("Error fetching medicines:", err);
+            }
+        };
+        fetchAllMedicines();
         fetchAppointments();
     }, []);
 
@@ -123,6 +145,7 @@ export default function ParentDashboard({ user }) {
                 ) : (
                     filteredVisits.map((visit) => (
                         <div className="prescription-card" key={visit.id}>
+                            <p><strong>Ward ID:</strong> {visit.student}</p>
                             <p><strong>Date:</strong> {new Date(visit.date).toLocaleDateString()} {visit.time ? visit.time : null}</p>
                             <p><strong>Reason:</strong> {visit.reason}</p>
                             <p><strong>Status:</strong> {visit.status}</p>
@@ -136,6 +159,43 @@ export default function ParentDashboard({ user }) {
                             )}
                         </div>
                     ))
+                )}
+            </div>
+
+            <div className="prescription-list">
+                <h2>My Ward's Medical Orders</h2>
+
+                {medicines.length === 0 ? (
+                    <p>No orders found.</p>
+                ) : (
+                    medicines.map((medicine) => {
+                        const medData = medicinesData.find(
+                            (m) => m.name === medicine.name
+                        );
+
+                        return (
+                            <div className="prescription-card" key={medicine._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div className="card-left">
+                                    <p><strong>Ward Name:</strong> {medicine.wardName}</p>
+                                    <p><strong>Ward ID:</strong> {medicine.student_id}</p>
+                                    <p><strong>Date:</strong> {new Date(medicine.createdAt).toLocaleDateString()}</p>
+                                    <p><strong>Medicine:</strong> {medicine.name}</p>
+                                    <p><strong>Status:</strong> {medicine.order}</p>
+
+                                    {medicine.price && <p><strong>Price:</strong> ₹{medicine.price}</p>}
+                                    {medicine.quantity && <p><strong>Quantity:</strong> {medicine.quantity}</p>}
+                                    {medicine.description && <p><strong>Description:</strong> {medicine.description}</p>}
+                                </div>
+                                <div className="card-right">
+                                    <img
+                                        src={medData?.image}
+                                        alt={medicine.name}
+                                        className="medicine-img"
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })
                 )}
             </div>
         </div>

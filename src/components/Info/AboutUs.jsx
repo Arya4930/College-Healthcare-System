@@ -1,4 +1,6 @@
 import "../../css/InfoPages.css";
+import photo from "/assets/photo.jpg";
+import kush from "/assets/kush.png";
 
 export default function AboutUs() {
     return (
@@ -17,6 +19,7 @@ export default function AboutUs() {
 
                 <section className="info-team-grid">
                     <article className="info-team-card">
+                        <img src={photo} alt="Arya Panwar"></img>
                         <h3>Arya Panwar</h3>
                         <p>
                             Focused on backend logic and authentication workflows. Helped design secure login, role-based
@@ -25,6 +28,7 @@ export default function AboutUs() {
                     </article>
 
                     <article className="info-team-card">
+                        <img src={kush} alt="Kushagra Singh"></img>
                         <h3>Kushagra Singh</h3>
                         <p>
                             Focused on frontend implementation and UI consistency. Worked on dashboards, responsive
