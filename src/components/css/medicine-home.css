@@ -1,0 +1,319 @@
+.medicine-home {
+    min-height: 100vh;
+    background: white;
+    padding: 20px;
+}
+
+.medicine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px 30px;
+    border-radius: 8px;
+}
+
+.medicine-header p {
+    font-size: 1.1rem;
+    color: #333;
+    margin: 0;
+}
+
+.cart-link {
+    background: #1a4ed8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Medicines Grid */
+.medicines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.medicine-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e8f0;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-card:hover {
+    border-color: #1a4ed8;
+}
+
+.medicine-image {
+    width: 100%;
+    height: 200px;
+    background: #f0f0f0;
+    overflow: hidden;
+    position: relative;
+}
+
+.medicine-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.medicine-card:hover .medicine-image img {
+    transform: scale(1.05);
+}
+
+.medicine-info {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.medicine-info h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+    color: #1f3f74;
+}
+
+.description {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 8px 0;
+    line-height: 1.4;
+}
+
+.stock {
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.price {
+    font-size: 1.5rem;
+    color: #1a4ed8;
+    font-weight: bold;
+    margin: 12px 0 16px 0;
+}
+
+.medicine-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    align-items: center;
+}
+
+.quantity-input {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #e0e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.quantity-input:focus {
+    outline: none;
+    border-color: #1a4ed8;
+}
+
+.add-to-cart-btn {
+    flex: 1;
+    background: #1a4ed8;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.add-to-cart-btn:hover {
+    background: #153fa0;
+}
+
+/* Cart Section */
+.cart-section {
+    background: #f8fbff;
+    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid #e0e8f0;
+}
+
+.cart-section h2 {
+    color: #1f3f74;
+    margin-top: 0;
+    font-size: 2rem;
+    padding-bottom: 15px;
+}
+
+.empty-cart {
+    text-align: center;
+    color: #999;
+    font-size: 1.1rem;
+    padding: 40px;
+}
+
+.cart-items {
+    margin-bottom: 30px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border: 1px solid #e0e8f0;
+    border-radius: 8px;
+    background: white;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+    background: #f8fbff;
+    border-color: #1a4ed8;
+}
+
+.cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.cart-item-info p {
+    margin: 0;
+    color: #666;
+}
+
+.cart-item-quantity {
+    min-width: 100px;
+}
+
+.cart-item-quantity input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e0e8f0;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.cart-item-quantity input:focus {
+    outline: none;
+    border-color: #1a4ed8;
+}
+
+.cart-item-total {
+    min-width: 100px;
+    text-align: right;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #1a4ed8;
+}
+
+.remove-btn {
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.remove-btn:hover {
+    background: #991b1b;
+}
+
+.cart-summary {
+    background: #f8fbff;
+    border: 1px solid #1a4ed8;
+    color: #1f3f74;
+    padding: 25px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 25px;
+}
+
+.cart-summary h3 {
+    margin: 0 0 20px 0;
+    font-size: 1.8rem;
+}
+
+.checkout-btn {
+    background: #1a4ed8;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.checkout-btn:hover {
+    background: #153fa0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .medicine-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .medicine-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .medicines-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+    }
+
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .cart-item-total {
+        text-align: center;
+    }
+
+    .medicine-actions {
+        flex-wrap: wrap;
+    }
+
+    .quantity-input,
+    .add-to-cart-btn {
+        flex: 1;
+        min-width: 100px;
+    }
+}

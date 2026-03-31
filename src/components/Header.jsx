@@ -1,7 +1,7 @@
 import "../css/Header.css";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "/logo.png";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
 export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
@@ -43,7 +43,11 @@ export default function Header({ user, LoggedIn, setLoggedIn, handleLogout }) {
                                 <Link to="/admin-dashboard" onClick={() => setMenuOpen(false)}>Admin Dashboard</Link>
                             )}
                             {user.type === "student" && (
-                                <Link to="/student-dashboard" onClick={() => setMenuOpen(false)}>Student Dashboard</Link>
+                                <>
+                                    <Link to="/student-dashboard" onClick={() => setMenuOpen(false)}>Student Dashboard</Link>
+                                    <Link to="/medicines" onClick={() => setMenuOpen(false)}>Medicines</Link>
+                                    <Link to="/medicines/student-cart" onClick={() => setMenuOpen(false)}><ShoppingCart /><span style={{ fontSize: "18px" }}> Cart</span></Link>
+                                </>
                             )}
                             {user.type === "parent" && (
                                 <Link to="/parent-dashboard" onClick={() => setMenuOpen(false)}>Parent Dashboard</Link>

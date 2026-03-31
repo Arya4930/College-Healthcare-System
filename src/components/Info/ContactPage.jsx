@@ -10,16 +10,16 @@ export default function ContactPage() {
                 <article className="info-section">
                     <h2>General Support</h2>
                     <p>
-                        Email: support.healthportal@college.edu<br />
-                        Phone: +91 98765 43210
+                        Email: support@sdc.com<br />
+                        Phone: +91 123456780
                     </p>
                 </article>
 
                 <article className="info-section">
                     <h2>Health Center Office</h2>
                     <p>
-                        College Health Center, Main Campus Block B<br />
-                        Mon-Fri: 8:30 AM to 6:00 PM
+                        College Health Center, Near B block<br />
+                        Mon-Sun: 8:30 AM to 6:00 PM
                     </p>
                 </article>
 

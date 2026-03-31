@@ -12,6 +12,8 @@ import fetchDoctorAppointments from "./routes/appointments/fetchDoctorAppointmen
 import acceptAppointment from "./routes/appointments/acceptAppointment.js";
 import complete from "./routes/appointments/complete.js"
 import fetchParentAppointments from "./routes/appointments/fetchParentAppointments.js"
+import medicineCheckoutRoute from "./routes/medicine/checkout.js";
+import fetchAllMedicineRoute from "./routes/medicine/fetchAllMedicine.js";
 import { connectDB } from "./lib/mongodb.js";
 import "dotenv/config";
 
@@ -38,6 +40,8 @@ app.use("/api/appointments/doctor", fetchDoctorAppointments);
 app.use("/api/appointments", acceptAppointment);
 app.use("/api/appointments", complete);
 app.use("/api/appointments", fetchParentAppointments);
+app.use("/api/medicine/checkout", medicineCheckoutRoute);
+app.use("/api/medicine", fetchAllMedicineRoute);
 
 app.listen(4000, async () => {
     console.log(`🚀 Express JS server running on port 4000`);

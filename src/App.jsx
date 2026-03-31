@@ -10,6 +10,8 @@ import StudentDashboard from './components/Dashboard/StudentDashboard.jsx';
 import ParentDashboard from './components/Dashboard/ParentDashboard.jsx';
 import DoctorDashboard from './components/Dashboard/DoctorDashboard.jsx';
 import AdminDashboard from './components/Dashboard/AdminDashboard.jsx';
+import MedicineHome from './components/medicines/medicine-home.jsx';
+import Student_cart from './components/medicines/student-cart.jsx';
 import { ProtectedRoute, TypeRoute, LoggedIn } from './protectedRoutes.jsx';
 import Header from './components/Header.jsx';
 import TermsOfService from './components/Info/TermsOfService.jsx';
@@ -194,6 +196,22 @@ export default function App() {
           element={
             <TypeRoute user={user} allowedTypes={["admin"]}>
               <AdminDashboard user={user} handleRegister={handleRegister} handleLogout={handleLogout} />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/medicines"
+          element={
+            <TypeRoute user={user} allowedTypes={["student"]}>
+              <MedicineHome />
+            </TypeRoute>
+          }
+        />
+        <Route
+          path="/medicines/student-cart"
+          element={
+            <TypeRoute user={user} allowedTypes={["student"]}>
+              <Student_cart />
             </TypeRoute>
           }
         />

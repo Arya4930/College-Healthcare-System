@@ -1,3 +1,4 @@
+/* eslint-env node */
 import express from "express";
 import User from "../lib/models/Users.js";
 import jwt from "jsonwebtoken";
