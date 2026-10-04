@@ -14,8 +14,8 @@ import complete from "./routes/appointments/complete.js"
 import fetchParentAppointments from "./routes/appointments/fetchParentAppointments.js"
 import medicineCheckoutRoute from "./routes/medicine/checkout.js";
 import fetchAllMedicineRoute from "./routes/medicine/fetchAllMedicine.js";
-import { connectDB } from "./lib/mongodb.js";
-import "dotenv/config";
+import { loadApplicationSecrets } from "./lib/secrets.js";
+import { initializeRepositories } from "./repositories/index.js";
 
 const app = express();
 
@@ -43,7 +43,22 @@ app.use("/api/appointments", fetchParentAppointments);
 app.use("/api/medicine/checkout", medicineCheckoutRoute);
 app.use("/api/medicine", fetchAllMedicineRoute);
 
-app.listen(4000, async () => {
-    console.log(`🚀 Express JS server running on port 4000`);
-    await connectDB();
-});
+async function startServer() {
+  try {
+    await loadApplicationSecrets();
+    const { provider } = await initializeRepositories();
+    console.log(`Database provider: ${provider}`);
+    if (provider === "dynamodb") console.log(`DynamoDB endpoint: ${process.env.DYNAMODB_ENDPOINT ? "local" : "AWS"}`);
+
+    const port = Number(process.env.PORT) || 4000;
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`CampusCare Express server listening on 0.0.0.0:${port}`);
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error(`CampusCare backend failed to start: ${message}`);
+    process.exitCode = 1;
+  }
+}
+
+startServer();

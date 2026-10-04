@@ -1,49 +1,6 @@
-import User from "../lib/models/Users.js";
 import express from "express";
-import jwt from "jsonwebtoken";
-
+import { authenticatedUser, safeUser } from "../lib/request-auth.js";
+import { getRepositories } from "../repositories/index.js";
 export const router = express.Router();
-
-router.get("/", async (req, res) => {
-    try {
-        const token =
-            req.cookies?.accessToken ||
-            req.header("Authorization")?.replace("Bearer ", "");
-
-        if (!token) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized: No token",
-            });
-        }
-
-        const decoded = jwt.verify(
-            token,
-            process.env.ACCESS_TOKEN_SECRET
-        );
-
-        const adminUser = await User.findById(decoded._id);
-
-        if (!adminUser || adminUser.role !== "admin") {
-            return res.status(403).json({
-                success: false,
-                message: "Only admins can register users",
-            });
-        }
-
-        const users = await User.find().select("-password -refreshToken");
-        return res.status(200).json({
-            success: true,
-            message: "Users fetched successfully",
-            data: users,
-        });
-    } catch (err) {
-        console.error("Error fetching users:", err instanceof Error ? err.message : "Unknown error");
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch users",
-        });
-    }
-});
-
+router.get("/", async (req, res) => { try { const admin = await authenticatedUser(req); if (!admin) return res.status(401).json({ success: false, message: "Unauthorized: No token" }); if (admin.role !== "admin") return res.status(403).json({ success: false, message: "Only admins can register users" }); const data = (await getRepositories().users.list()).map(safeUser); return res.status(200).json({ success: true, message: "Users fetched successfully", data }); } catch (error) { console.error("User fetch failed:", error instanceof Error ? error.message : "Unknown error"); return res.status(500).json({ success: false, message: "Failed to fetch users" }); } });
 export default router;
