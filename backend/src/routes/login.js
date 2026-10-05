@@ -15,7 +15,12 @@ router.post("/", async (req, res) => {
     if (!await bcrypt.compare(password, user.password)) return res.status(401).json({ success: false, message: "Invalid password" });
     const { accessToken, refreshToken } = createTokens(user);
     await users.updateRefreshToken(user._id, refreshToken);
-    return res.status(200).cookie("accessToken", accessToken, { httpOnly: true, secure: true }).cookie("refreshToken", refreshToken, { httpOnly: true, secure: true }).json({ success: true, message: "User logged in successfully", data: { user: safeUser(user), accessToken, refreshToken } });
+    const crossOriginCookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
+    return res.status(200).cookie("accessToken", accessToken, crossOriginCookieOptions).cookie("refreshToken", refreshToken, crossOriginCookieOptions).json({ success: true, message: "User logged in successfully", data: { user: safeUser(user), accessToken, refreshToken } });
   } catch (error) { console.error("Login failed:", error instanceof Error ? error.message : "Unknown error"); return res.status(500).json({ success: false, message: "Server error" }); }
 });
 export default router;

@@ -21,6 +21,8 @@ import { logger } from "./lib/logger.js";
 const app = express();
 let server;
 let shuttingDown = false;
+const isProduction = process.env.NODE_ENV === "production";
+const frontendOrigin = process.env.FRONTEND_URL;
 
 if (process.env.TRUST_PROXY === "true") {
   app.set("trust proxy", 1);
@@ -28,7 +30,7 @@ if (process.env.TRUST_PROXY === "true") {
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: frontendOrigin,
     credentials: true,
   })
 );
@@ -52,6 +54,9 @@ app.use("/api/medicine", fetchAllMedicineRoute);
 
 async function startServer() {
   try {
+    if (isProduction && !frontendOrigin) {
+      throw new Error("FRONTEND_URL is required in production for credentialed CORS.");
+    }
     await loadApplicationSecrets();
     const { provider } = await initializeRepositories();
     logger.info("Database provider initialized", { provider });

@@ -5,7 +5,8 @@ function write(level, message, fields = {}) {
   if (process.env.NODE_ENV === "production") {
     console.log(JSON.stringify(entry));
   } else {
-    console.log(`[${entry.level}] ${entry.message}`);
+    const detail = typeof fields.error === "string" ? `: ${fields.error}` : "";
+    console.log(`[${entry.level}] ${entry.message}${detail}`);
   }
 }
 
