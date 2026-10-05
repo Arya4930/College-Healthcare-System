@@ -18,3 +18,8 @@ export function getRepositories() {
   if (!repositories) throw new Error("Database repositories have not been initialized");
   return repositories;
 }
+
+export async function closeRepositories() {
+  if (repositories?.close) await repositories.close();
+  repositories = undefined;
+}

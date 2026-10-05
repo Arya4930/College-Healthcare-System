@@ -15,9 +15,16 @@ import fetchParentAppointments from "./routes/appointments/fetchParentAppointmen
 import medicineCheckoutRoute from "./routes/medicine/checkout.js";
 import fetchAllMedicineRoute from "./routes/medicine/fetchAllMedicine.js";
 import { loadApplicationSecrets } from "./lib/secrets.js";
-import { initializeRepositories } from "./repositories/index.js";
+import { closeRepositories, initializeRepositories } from "./repositories/index.js";
+import { logger } from "./lib/logger.js";
 
 const app = express();
+let server;
+let shuttingDown = false;
+
+if (process.env.TRUST_PROXY === "true") {
+  app.set("trust proxy", 1);
+}
 
 app.use(
   cors({
@@ -47,18 +54,47 @@ async function startServer() {
   try {
     await loadApplicationSecrets();
     const { provider } = await initializeRepositories();
-    console.log(`Database provider: ${provider}`);
-    if (provider === "dynamodb") console.log(`DynamoDB endpoint: ${process.env.DYNAMODB_ENDPOINT ? "local" : "AWS"}`);
+    logger.info("Database provider initialized", { provider });
+    if (provider === "dynamodb") logger.info("DynamoDB client initialized", { target: process.env.DYNAMODB_ENDPOINT ? "local" : "aws" });
 
     const port = Number(process.env.PORT) || 4000;
-    app.listen(port, "0.0.0.0", () => {
-      console.log(`CampusCare Express server listening on 0.0.0.0:${port}`);
+    server = app.listen(port, "0.0.0.0", () => {
+      logger.info("CampusCare backend started", { host: "0.0.0.0", port, provider });
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error(`CampusCare backend failed to start: ${message}`);
+    logger.error("CampusCare backend failed to start", { error: message });
     process.exitCode = 1;
   }
 }
 
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info("Graceful shutdown started", { signal });
+  if (!server) return process.exit(0);
+  const forcedExit = setTimeout(() => {
+    logger.error("Graceful shutdown timed out");
+    process.exit(1);
+  }, 30000);
+  forcedExit.unref();
+  server.close(async (error) => {
+    clearTimeout(forcedExit);
+    if (error) {
+      logger.error("Graceful shutdown failed", { error: error.message });
+      process.exit(1);
+    }
+    try {
+      await closeRepositories();
+      logger.info("Graceful shutdown completed");
+      process.exit(0);
+    } catch (closeError) {
+      logger.error("Repository shutdown failed", { error: closeError instanceof Error ? closeError.message : "Unknown error" });
+      process.exit(1);
+    }
+  });
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
 startServer();

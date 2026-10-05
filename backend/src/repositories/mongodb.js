@@ -6,6 +6,10 @@ export async function createMongoRepositories() {
   const plain = (doc) => doc?.toObject ? doc.toObject() : doc;
   const userView = (user) => user && ({ ...plain(user), _id: String(user._id), ID: user.ID, password: user.password, parent: user.parent });
   return {
+    close: async () => {
+      const { default: mongoose } = await import("mongoose");
+      await mongoose.disconnect();
+    },
     users: {
       async findById(id) { return userView(await User.findById(id)); },
       async findByInstitutionId(ID, type) { return userView(await User.findOne({ ID: String(ID).toLowerCase(), ...(type ? { type } : {}) })); },

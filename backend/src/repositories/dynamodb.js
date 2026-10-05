@@ -62,6 +62,7 @@ export async function createDynamoRepositories() {
   const update = (params) => db.client.send(new db.UpdateCommand(params));
 
   return {
+    close: async () => db.rawClient.destroy(),
     users: {
       async findById(userId) { const r = await get({ TableName: tables().users, Key: { userId } }); return r.Item && publicUser(r.Item); },
       async findByInstitutionId(institutionId, type) {
