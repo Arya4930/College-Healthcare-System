@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     // GitHub Pages serves this project under its repository subdirectory.
-    // Set VITE_BASE_PATH only when a future static host uses a different path.
-    base: env.VITE_BASE_PATH || "/College-Healthcare-System/",
+    // The explicit AWS mode is served from the custom domain root.
+    base: env.VITE_BASE_PATH || (mode === "aws" ? "/" : "/College-Healthcare-System/"),
   };
 });

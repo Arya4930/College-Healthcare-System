@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:aws": "vite build --mode aws",
     "lint": "eslint .",
     "preview": "vite preview",
     "test:auth": "node --test backend/test/auth-provider.test.js",
