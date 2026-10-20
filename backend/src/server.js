@@ -1,3 +1,5 @@
+/* global process */
+
 import express from "express";
 import cors from "cors";
 
@@ -15,8 +17,10 @@ import fetchParentAppointments from "./routes/appointments/fetchParentAppointmen
 import medicineCheckoutRoute from "./routes/medicine/checkout.js";
 import fetchAllMedicineRoute from "./routes/medicine/fetchAllMedicine.js";
 import { loadApplicationSecrets } from "./lib/secrets.js";
+import { initializeAuthProvider } from "./auth/provider.js";
 import { closeRepositories, initializeRepositories } from "./repositories/index.js";
 import { logger } from "./lib/logger.js";
+import { finalErrorHandler, requestTelemetry } from "./lib/http-observability.js";
 
 const app = express();
 let server;
@@ -27,6 +31,8 @@ const frontendOrigin = process.env.FRONTEND_URL;
 if (process.env.TRUST_PROXY === "true") {
   app.set("trust proxy", 1);
 }
+
+app.use(requestTelemetry());
 
 app.use(
   cors({
@@ -51,6 +57,7 @@ app.use("/api/appointments", complete);
 app.use("/api/appointments", fetchParentAppointments);
 app.use("/api/medicine/checkout", medicineCheckoutRoute);
 app.use("/api/medicine", fetchAllMedicineRoute);
+app.use(finalErrorHandler());
 
 async function startServer() {
   try {
@@ -58,48 +65,49 @@ async function startServer() {
       throw new Error("FRONTEND_URL is required in production for credentialed CORS.");
     }
     await loadApplicationSecrets();
+    await initializeAuthProvider();
+    logger.info("authentication_provider_initialized");
     const { provider } = await initializeRepositories();
-    logger.info("Database provider initialized", { provider });
-    if (provider === "dynamodb") logger.info("DynamoDB client initialized", { target: process.env.DYNAMODB_ENDPOINT ? "local" : "aws" });
+    logger.info("database_provider_initialized");
+    if (provider === "dynamodb") logger.info("dynamodb_client_initialized");
 
     const port = Number(process.env.PORT) || 4000;
     server = app.listen(port, "0.0.0.0", () => {
-      logger.info("CampusCare backend started", { host: "0.0.0.0", port, provider });
+      logger.info("backend_started");
     });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logger.error("CampusCare backend failed to start", { error: message });
+  } catch {
+    logger.error("backend_start_failed");
     process.exitCode = 1;
   }
 }
 
-function shutdown(signal) {
+function shutdown() {
   if (shuttingDown) return;
   shuttingDown = true;
-  logger.info("Graceful shutdown started", { signal });
+  logger.info("graceful_shutdown_started");
   if (!server) return process.exit(0);
   const forcedExit = setTimeout(() => {
-    logger.error("Graceful shutdown timed out");
+    logger.error("graceful_shutdown_timed_out");
     process.exit(1);
   }, 30000);
   forcedExit.unref();
-  server.close(async (error) => {
+  server.close(async (closeFailure) => {
     clearTimeout(forcedExit);
-    if (error) {
-      logger.error("Graceful shutdown failed", { error: error.message });
+    if (closeFailure) {
+      logger.error("graceful_shutdown_failed");
       process.exit(1);
     }
     try {
       await closeRepositories();
-      logger.info("Graceful shutdown completed");
+      logger.info("graceful_shutdown_completed");
       process.exit(0);
-    } catch (closeError) {
-      logger.error("Repository shutdown failed", { error: closeError instanceof Error ? closeError.message : "Unknown error" });
+    } catch {
+      logger.error("repository_shutdown_failed");
       process.exit(1);
     }
   });
 }
 
-process.on("SIGTERM", () => shutdown("SIGTERM"));
-process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
 startServer();

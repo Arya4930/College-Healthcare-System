@@ -1,8 +1,11 @@
+/* global process */
+
 import express from "express";
 import bcrypt from "bcrypt";
 import { getRepositories } from "../repositories/index.js";
 import { createTokens } from "../lib/auth-tokens.js";
 import { safeUser } from "../lib/request-auth.js";
+import { logRouteFailure } from "../lib/http-observability.js";
 
 export const router = express.Router();
 router.post("/", async (req, res) => {
@@ -21,6 +24,6 @@ router.post("/", async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
     return res.status(200).cookie("accessToken", accessToken, crossOriginCookieOptions).cookie("refreshToken", refreshToken, crossOriginCookieOptions).json({ success: true, message: "User logged in successfully", data: { user: safeUser(user), accessToken, refreshToken } });
-  } catch (error) { console.error("Login failed:", error instanceof Error ? error.message : "Unknown error"); return res.status(500).json({ success: false, message: "Server error" }); }
+  } catch { logRouteFailure(req, "auth_login_failed", 500); return res.status(500).json({ success: false, message: "Server error" }); }
 });
 export default router;

@@ -1,5 +1,8 @@
+/* global process */
+
 import mongoose from "mongoose";
 import "dotenv/config";
+import { logger } from "./logger.js";
 
 export const connectDB = async () => {
   try {
@@ -8,7 +11,7 @@ export const connectDB = async () => {
       return Promise.resolve(true);
     }
   } catch (error) {
-    console.error(error);
+    logger.error("mongodb_connection_failed");
     return Promise.reject(error);
   }
 };

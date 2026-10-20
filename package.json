@@ -9,6 +9,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test:auth": "node --test backend/test/auth-provider.test.js",
+    "test": "node --test backend/test/*.test.js",
     "deploy": "vite build && gh-pages -d dist",
     "api-dev": "nodemon backend/src/server.js",
     "api-start": "node backend/src/server.js"

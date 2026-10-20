@@ -6,7 +6,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [react()],
-    // Set VITE_BASE_PATH only for static hosts that serve under a subdirectory.
-    base: env.VITE_BASE_PATH || "/",
+    // GitHub Pages serves this project under its repository subdirectory.
+    // Set VITE_BASE_PATH only when a future static host uses a different path.
+    base: env.VITE_BASE_PATH || "/College-Healthcare-System/",
   };
 });

@@ -1,16 +1,28 @@
-const service = "campuscare-backend";
+/* global process */
 
-function write(level, message, fields = {}) {
-  const entry = { level, message, service, timestamp: new Date().toISOString(), ...fields };
-  if (process.env.NODE_ENV === "production") {
-    console.log(JSON.stringify(entry));
-  } else {
-    const detail = typeof fields.error === "string" ? `: ${fields.error}` : "";
-    console.log(`[${entry.level}] ${entry.message}${detail}`);
-  }
+const service = "campuscare-backend";
+const approvedFields = ["requestId", "statusCode", "route", "durationMs"];
+
+function safeFields(fields = {}) {
+  return Object.fromEntries(approvedFields.flatMap((field) => {
+    const value = fields[field];
+    if (field === "statusCode" && Number.isInteger(value) && value >= 100 && value <= 599) return [[field, value]];
+    if (field === "durationMs" && Number.isFinite(value) && value >= 0) return [[field, Math.round(value)]];
+    if ((field === "requestId" || field === "route") && typeof value === "string" && value.length <= 200) return [[field, value]];
+    return [];
+  }));
 }
 
-export const logger = {
-  info: (message, fields) => write("info", message, fields),
-  error: (message, fields) => write("error", message, fields),
-};
+export function createLogger({ write = console.log } = {}) {
+  function log(level, event, fields) {
+    const entry = { level, event, service, timestamp: new Date().toISOString(), ...safeFields(fields) };
+    write(process.env.NODE_ENV === "production" ? JSON.stringify(entry) : `[${entry.level}] ${entry.event}`);
+  }
+
+  return {
+    info: (event, fields) => log("info", event, fields),
+    error: (event, fields) => log("error", event, fields),
+  };
+}
+
+export const logger = createLogger();
